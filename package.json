@@ -1,0 +1,29 @@
+{
+  "name": "homefront",
+  "version": "0.0.0",
+  "description": "FIXME",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp",
+    "prepublish": "bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harrio/homefront.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/harrio/homefront/issues"
+  },
+  "devDependencies": {
+    "browserify": "~3.32.0",
+    "bower": "~1.2.8",
+    "gulp-jade": "0.4.2",
+    "gulp": "^3.5.5"
+  }
+}
