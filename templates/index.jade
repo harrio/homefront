@@ -1,0 +1,9 @@
+extends layout
+
+block body
+  div(ng-controller='tempCtrl')
+    ul
+      li(ng-repeat="temp in temps")
+        [{{temp.id}}] {{temp.temp}}
+  script(src='js/bundle.js')
+

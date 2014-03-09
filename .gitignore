@@ -9,3 +9,9 @@ pom.xml
 .lein-failures
 .lein-plugins
 .lein-env
+.lein-repl-history
+.nrepl-port
+bower_components
+resources
+node_modules
+
