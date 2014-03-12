@@ -21,7 +21,7 @@
 
 (defresource get-temps
   :allowed-methods [:get]
-  :handle-ok (fn [_] generate-string @temps)
+  :handle-ok (fn [_] generate-string (:data @temps))
   :available-media-types ["application/json"])
 
 (defroutes home-routes

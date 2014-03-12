@@ -10,12 +10,12 @@
 
 (defn init []
   (println "homefront is starting")
-  (open-serial)
+  (start-serial)
   )
 
 (defn destroy []
   (println "homefront is shutting down")
-  (close-serial)
+  (stop-serial)
   )
 
 (defroutes app-routes

@@ -9,7 +9,8 @@
                  [liberator "0.11.0"]
                  [cheshire "5.3.1"]
                  [clj-time "0.6.0"]
-                 [lib-noir "0.8.1"]]
+                 [lib-noir "0.8.1"]
+                 [silasdavis/at-at "1.2.0"]]
   :dev-dependencies [[lein-eclipse "1.0.0"]]
   :plugins [[lein-ring "0.8.7"] [no-man-is-an-island/lein-eclipse "2.0.0"]]
   :ring {:handler homefront.handler/app
