@@ -6,7 +6,7 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [cheshire.core :refer :all]
-            [homefront.routes.home :refer [home-routes]]
+            [homefront.routes.home :refer :all]
             [homefront.sensor :refer :all]))
 (defn read-config []
   (parse-stream (clojure.java.io/reader (clojure.java.io/resource "config.json"))))

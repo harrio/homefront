@@ -2,9 +2,15 @@
   (:require [compojure.core :refer :all]
             [liberator.core :refer [defresource resource request-method-in]]
             [cheshire.core :refer [generate-string]]
+            [cheshire.generate :refer :all]
+            [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
             [homefront.sensor :refer [temps]]))
+
+
+(add-encoder org.joda.time.DateTime 
+             (fn [dt jsonGenerator] (.writeString jsonGenerator (unparse (formatters :basic-date-time) dt))))
 
 (defresource home
   :available-media-types ["text/html"]
@@ -21,7 +27,7 @@
 
 (defresource get-temps
   :allowed-methods [:get]
-  :handle-ok (fn [_] generate-string (:data @temps))
+  :handle-ok (fn [_] (generate-string @temps))
   :available-media-types ["application/json"])
 
 (defroutes home-routes
