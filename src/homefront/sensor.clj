@@ -30,7 +30,7 @@
 (defn read-input-line [path input-stream]
   (let [in (java.io.BufferedReader. (java.io.InputStreamReader. input-stream))]
     (let [data (parse-string (.readLine in) true)]
-      (println (time/now) data)
+      (println (time/now) path data)
       (set-temps path data)
       )
   ))
@@ -56,11 +56,12 @@
 (defn start-serial [config]
   (def config config)
   (dorun (map open-serial (config "sensors")))
-  (def sched (interspaced 10000 check-serials at-pool :initial-delay 10000)))
+  (def sched (interspaced 30000 check-serials at-pool :initial-delay 30000)))
 
 (defn stop-serial []
   (stop sched)
-  (dorun (map close-serial @ports))
+  (doseq [keyval @ports] (close-serial (:path (val keyval))))
+  (dorun (map #(close-serial (:path %)) @ports))
   )
 
 ;"/dev/tty.HC-06-DevB"
@@ -85,13 +86,14 @@
 (def not-nil? (complement nil?))
 
 (defn close-serial [path]
-  (println "Close serial")
-  (let [port (@ports path)]
+  (println "Close serial " path)
+  (let [port (:port (@ports path))]
     (if (not-nil? port)
       (do 
         (serial/remove-listener port)
         (serial/close port)
-        (remove-port port)
+        (remove-port path)
+        (println "Closed " path)
         )
       (println "Nothing to close"))))
 
