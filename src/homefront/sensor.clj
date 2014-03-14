@@ -4,64 +4,94 @@
             [clj-time.core :as time]
             [overtone.at-at :refer :all]))
 
+(defrecord PortHandle [path port])
+(defrecord PortData [data timestamp])
 
-(def temps (atom {:timestamp nil}))
+(def config {})
+(def ports (atom {}))
+(def temps (atom {}))
+
 (def at-pool (mk-pool))
 
 (declare open-serial)
 (declare close-serial)
 
-(defn set-temps [temp-data]
-  (swap! temps (fn[old new] new) temp-data))
+(defn remove-port [path]
+  (println "Remove port " path)
+  (swap! ports dissoc path))
 
-(defn read-input-line [input-stream]
+(defn add-port [path port]
+  (let [new-port (PortHandle. path port)]
+    (swap! ports assoc path new-port)))
+
+(defn set-temps [path temp-data]
+  (swap! temps assoc path (PortData. temp-data (time/now))))
+
+(defn read-input-line [path input-stream]
   (let [in (java.io.BufferedReader. (java.io.InputStreamReader. input-stream))]
     (let [data (parse-string (.readLine in) true)]
       (println (time/now) data)
-      (set-temps { :data data :timestamp (time/now) })
+      (set-temps path data)
       )
   ))
 
-(defn no-fresh-data [] 
-  (let [last-received (:timestamp @temps)]
+(defn no-fresh-data [path] 
+  (let [last-received (:timestamp (@temps path))]
     (or (nil? last-received) (time/before? (time/plus last-received (time/seconds 30)) (time/now)))))
 
-(defn check-serial []
-  (println "Check data")
-  (if (no-fresh-data)
-    (do (println "Data timeout... reconnect") 
-      (close-serial)
-      (open-serial))
-    (println "Data OK")))
+(defn check-data [sensor]
+  (let [path (sensor "path")]
+    (println "Check " path)
+    (if (or (nil? (@ports path))
+            (no-fresh-data path))
+      (do (println "Data timeout... reconnect") 
+        (close-serial path)
+        (open-serial sensor))
+      (println "Data OK"))))
 
-(defn start-serial []
-  (open-serial)
-  (def sched (interspaced 10000 check-serial at-pool :initial-delay 10000)))
+(defn check-serials []
+  (println "Check data")
+  (dorun (map check-data (config "sensors")))) 
+
+(defn start-serial [config]
+  (def config config)
+  (dorun (map open-serial (config "sensors")))
+  (def sched (interspaced 10000 check-serials at-pool :initial-delay 10000)))
 
 (defn stop-serial []
   (stop sched)
-  (close-serial)
+  (dorun (map close-serial @ports))
   )
 
-(defn open-serial []
-  (println "Opening serial...")
-  (try 
-    (do 
-      (def port (serial/open "/dev/tty.HC-06-DevB"))
-      (serial/listen port #(read-input-line %))
-      )
-    (catch Exception e (println "Serial failed " (.getMessage e)))))
+;"/dev/tty.HC-06-DevB"
+(defn open-serial [sensor]
+  (let [path (sensor "path")]
+    (println "Opening serial " path)
+    (try 
+      (do
+        (def port (serial/open path))
+        (serial/listen port #(read-input-line path %))
+        (add-port path port))
+      (catch Exception e 
+        (do 
+          (println "Serial failed " (.getMessage e))
+          )))))
 
 (defn port-bound? [sym]
-  (if-let [v (resolve sym)]
+  (or (nil? sym) (if-let [v (resolve sym)]
     (bound? v)
-    false))
+    false)))
 
-(defn close-serial []
+(def not-nil? (complement nil?))
+
+(defn close-serial [path]
   (println "Close serial")
-  (if (port-bound? 'port)
-    (do 
-      (serial/remove-listener port)
-      (serial/close port))
-    (println "Nothing to close")))
+  (let [port (@ports path)]
+    (if (not-nil? port)
+      (do 
+        (serial/remove-listener port)
+        (serial/close port)
+        (remove-port port)
+        )
+      (println "Nothing to close"))))
 

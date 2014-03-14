@@ -5,12 +5,15 @@
             [hiccup.middleware :refer [wrap-base-url]]
             [compojure.handler :as handler]
             [compojure.route :as route]
+            [cheshire.core :refer :all]
             [homefront.routes.home :refer [home-routes]]
             [homefront.sensor :refer :all]))
+(defn read-config []
+  (parse-stream (clojure.java.io/reader (clojure.java.io/resource "config.json"))))
 
 (defn init []
   (println "homefront is starting")
-  (start-serial)
+  (start-serial (read-config))
   )
 
 (defn destroy []
