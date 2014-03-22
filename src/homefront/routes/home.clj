@@ -6,7 +6,7 @@
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.sensor :refer [temps]]))
+            [homefront.sensor :refer :all]))
 
 
 (add-encoder org.joda.time.DateTime 
@@ -25,11 +25,11 @@
    (fn [{{{resource :resource} :route-params} :request}]
     (.lastModified (file (str (io/resource-path) "/index.html")))))
 
-(defresource get-temps
+(defresource get-sensors
   :allowed-methods [:get]
-  :handle-ok (fn [_] (generate-string @temps))
+  :handle-ok (fn [_] (generate-string (get-sensor-data)))
   :available-media-types ["application/json"])
 
 (defroutes home-routes
   (ANY "/" request home)
-  (ANY "/temps" request get-temps))
+  (ANY "/sensors" request get-sensors))

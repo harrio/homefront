@@ -3,15 +3,15 @@ var angular = require('angular');
 exports.tempCtrl = function($scope, $http, $interval) {
   var stop;
 
-  $scope.fetchTemps = function() {
+  $scope.fetchSensors = function() {
     if (angular.isDefined(stop)) {
       return;
     }
   
     stop = $interval(function() {
-      $http({method: 'GET', url: '/temps'}).
+      $http({method: 'GET', url: '/sensors'}).
         success(function(data, status, headers, config) {
-          $scope.temps = data;
+          $scope.sensors = data;
       }).
       error(function(data, status, headers, config) {
         console.log("temps failed: " + status);
@@ -31,5 +31,5 @@ exports.tempCtrl = function($scope, $http, $interval) {
     $scope.stopFetch();
   });
 
-  $scope.fetchTemps();
+  $scope.fetchSensors();
 };

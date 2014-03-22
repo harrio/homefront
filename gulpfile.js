@@ -10,7 +10,7 @@ gulp.task('templates', function() {
 });
  
 var paths = {
-  scripts: ['src/js/**/*.js']
+  scripts: ['src/js/**/*.js', 'templates/*']
 };
  
 var brConfig = {
@@ -44,4 +44,4 @@ gulp.task('watch', function () {
   gulp.watch(paths.scripts, ['scripts']);
 });
  
-gulp.task('default', ['scripts', 'templates', 'watch']);
+gulp.task('default', ['scripts', 'templates']);

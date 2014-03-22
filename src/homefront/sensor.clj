@@ -7,7 +7,7 @@
 (defrecord PortHandle [path port])
 (defrecord PortData [data timestamp])
 
-(def config {})
+(def config (atom {}))
 (def ports (atom {}))
 (def temps (atom {}))
 
@@ -15,6 +15,25 @@
 
 (declare open-serial)
 (declare close-serial)
+
+(defn probe-data [data]
+  (fn [probe]
+    (if (nil? data)
+      {}
+      (let [this-data (first (filter #(= (probe "id") (% :id)) data))]
+        { :id (probe "id") :name (probe "name") :temp (this-data :temp) :hum (this-data :hum) }))))
+
+(defn get-probe-data [sensor]
+  (let [probes (sensor "probes")
+        temps (@temps (sensor "path"))]
+    { :timestamp (:timestamp temps) :values (map (probe-data (:data temps)) probes) }))
+
+(defn sensor-data [sensor] 
+  (let [data (@temps (sensor "path"))]
+    { :name (sensor "name") :data (get-probe-data sensor) }))
+                     
+(defn get-sensor-data [] 
+  (map sensor-data (@config "sensors")))
 
 (defn remove-port [path]
   (println "Remove port " path)
@@ -51,11 +70,11 @@
 
 (defn check-serials []
   (println "Check data")
-  (dorun (map check-data (config "sensors")))) 
+  (dorun (map check-data (@config "sensors")))) 
 
-(defn start-serial [config]
-  (def config config)
-  (dorun (map open-serial (config "sensors")))
+(defn start-serial [new-config]
+  (reset! config new-config)
+  (dorun (map open-serial (@config "sensors")))
   (def sched (interspaced 30000 check-serials at-pool :initial-delay 30000)))
 
 (defn stop-serial []
