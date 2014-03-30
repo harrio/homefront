@@ -32,4 +32,5 @@
 
 (defroutes home-routes
   (ANY "/" request home)
-  (ANY "/sensors" request get-sensors))
+  (ANY "/sensors" request get-sensors)
+  (POST "/saveData" params (println params)))
