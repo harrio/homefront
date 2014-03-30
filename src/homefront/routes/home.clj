@@ -33,4 +33,4 @@
 (defroutes home-routes
   (ANY "/" request home)
   (ANY "/sensors" request get-sensors)
-  (POST "/saveData" params (println params)))
+  (POST "/saveData" {body :body} (println (slurp body))))
