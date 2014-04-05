@@ -6,7 +6,8 @@
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.sensor :refer :all]))
+            [homefront.sensor :refer :all]
+            [homefront.db :refer :all]))
 
 
 (add-encoder org.joda.time.DateTime 
@@ -30,7 +31,14 @@
   :handle-ok (fn [_] (generate-string (get-sensor-data)))
   :available-media-types ["application/json"])
 
+(defresource save-data [body]
+  :allowed-methods [:post]
+  :post! (fn [ctx]
+           (let [body (get-in ctx [:request :body])]
+             (insert-sensor-json (slurp body))))
+  :available-media-types ["application/json"])
+
 (defroutes home-routes
   (ANY "/" request home)
   (ANY "/sensors" request get-sensors)
-  (POST "/saveData" {body :body} (println (slurp body))))
+  (POST "/saveData" request save-data))

@@ -1,6 +1,5 @@
 (ns homefront.sensor
-  (:require [serial-port :as serial]
-            [cheshire.core :refer :all]
+  (:require [cheshire.core :refer :all]
             [clj-time.core :as time]
             [overtone.at-at :refer :all]))
 
@@ -12,9 +11,6 @@
 (def temps (atom {}))
 
 (def at-pool (mk-pool))
-
-(declare open-serial)
-(declare close-serial)
 
 (defn probe-data [data]
   (fn [probe]
@@ -58,61 +54,6 @@
   (let [last-received (:timestamp (@temps path))]
     (or (nil? last-received) (time/before? (time/plus last-received (time/seconds 30)) (time/now)))))
 
-(defn check-data [sensor]
-  (let [path (sensor "path")]
-    (println "Check " path)
-    (if (or (nil? (@ports path))
-            (no-fresh-data path))
-      (do (println "Data timeout... reconnect") 
-        (close-serial path)
-        (open-serial sensor))
-      (println "Data OK"))))
-
-(defn check-serials []
-  (println "Check data")
-  (dorun (map check-data (@config "sensors")))) 
-
-(defn start-serial [new-config]
-  (reset! config new-config)
-  (dorun (map open-serial (@config "sensors")))
-  (def sched (interspaced 30000 check-serials at-pool :initial-delay 30000)))
-
-(defn stop-serial []
-  (stop sched)
-  (doseq [keyval @ports] (close-serial (:path (val keyval))))
-  (dorun (map #(close-serial (:path %)) @ports))
-  )
-
-;"/dev/tty.HC-06-DevB"
-(defn open-serial [sensor]
-  (let [path (sensor "path")]
-    (println "Opening serial " path)
-    (try 
-      (do
-        (def port (serial/open path))
-        (serial/listen port #(read-input-line path %))
-        (add-port path port))
-      (catch Exception e 
-        (do 
-          (println "Serial failed " (.getMessage e))
-          )))))
-
-(defn port-bound? [sym]
-  (or (nil? sym) (if-let [v (resolve sym)]
-    (bound? v)
-    false)))
-
 (def not-nil? (complement nil?))
 
-(defn close-serial [path]
-  (println "Close serial " path)
-  (let [port (:port (@ports path))]
-    (if (not-nil? port)
-      (do 
-        (serial/remove-listener port)
-        (serial/close port)
-        (remove-port path)
-        (println "Closed " path)
-        )
-      (println "Nothing to close"))))
 

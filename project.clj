@@ -5,18 +5,21 @@
                  [compojure "1.1.6"]
                  [hiccup "1.0.4"]
                  [ring-server "0.3.0"]
-                 [serial-port "1.1.2"]
                  [liberator "0.11.0"]
                  [cheshire "5.3.1"]
                  [clj-time "0.6.0"]
                  [lib-noir "0.8.1"]
-                 [silasdavis/at-at "1.2.0"]]
+                 [silasdavis/at-at "1.2.0"]
+                 [http-kit "2.1.16"]
+                 [com.novemberain/monger "1.7.0"]
+                 [ring-basic-authentication "1.0.5"]]
   :dev-dependencies [[lein-eclipse "1.0.0"]]
   :plugins [[lein-ring "0.8.7"] [no-man-is-an-island/lein-eclipse "2.0.0"]]
   :ring {:handler homefront.handler/app
          :init homefront.handler/init
          :destroy homefront.handler/destroy}
   :aot :all
+  :main homefront.main
   :profiles
   {:production
    {:ring
