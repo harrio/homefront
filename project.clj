@@ -12,7 +12,8 @@
                  [silasdavis/at-at "1.2.0"]
                  [http-kit "2.1.16"]
                  [com.novemberain/monger "1.7.0"]
-                 [ring-basic-authentication "1.0.5"]]
+                 [ring-basic-authentication "1.0.5"]
+                 [ring/ring-json "0.3.0"]]
   :dev-dependencies [[lein-eclipse "1.0.0"]]
   :plugins [[lein-ring "0.8.7"] [no-man-is-an-island/lein-eclipse "2.0.0"]]
   :ring {:handler homefront.handler/app

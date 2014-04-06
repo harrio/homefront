@@ -1,7 +1,6 @@
 (ns homefront.repl
   (:use homefront.handler
         ring.server.standalone
-        serial-port
         [ring.middleware file-info file]))
 
 (defonce server (atom nil))

@@ -7,11 +7,17 @@
             [noir.io :as io]
             [clojure.java.io :refer [file]]
             [homefront.sensor :refer :all]
-            [homefront.db :refer :all]))
+            [homefront.db :refer :all]
+            monger.json))
 
 
 (add-encoder org.joda.time.DateTime 
              (fn [dt jsonGenerator] (.writeString jsonGenerator (unparse (formatters :basic-date-time) dt))))
+
+(def time-formatter (formatter "dd.MM.yyyyhh:mm:ss"))
+
+(defn parse-time [time-str]
+  (parse time-str))
 
 (defresource home
   :available-media-types ["text/html"]
@@ -28,17 +34,21 @@
 
 (defresource get-sensors
   :allowed-methods [:get]
-  :handle-ok (fn [_] (generate-string (get-sensor-data)))
+  :handle-ok (fn [ctx] 
+               (let [start-time (get-in ctx [:request :params :start])
+                     end-time (get-in ctx [:request :params :end])]
+                 (println "get sensors" start-time end-time)
+                 (generate-string (find-sensor-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
-(defresource save-data [body]
+(defresource save-data
   :allowed-methods [:post]
   :post! (fn [ctx]
            (let [body (get-in ctx [:request :body])]
-             (insert-sensor-json (slurp body))))
+             (insert-sensor-json body)))
   :available-media-types ["application/json"])
 
 (defroutes home-routes
   (ANY "/" request home)
-  (ANY "/sensors" request get-sensors)
+  (GET "/sensors" request get-sensors)
   (POST "/saveData" request save-data))

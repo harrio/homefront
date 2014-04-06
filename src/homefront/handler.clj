@@ -8,7 +8,8 @@
             [cheshire.core :refer :all]
             [homefront.routes.home :refer :all]
             [homefront.sensor :refer :all]
-            [ring.middleware.basic-authentication :refer :all]))
+            [ring.middleware.basic-authentication :refer :all]
+            [ring.middleware.json :refer :all]))
 (defn read-config []
   (parse-stream (clojure.java.io/reader (clojure.java.io/resource "config.json"))))
 
@@ -34,6 +35,7 @@
   (-> (routes home-routes app-routes)
       (handler/site)
       (wrap-base-url)
-      (wrap-basic-authentication authenticated?)))
+      (wrap-basic-authentication authenticated?)
+      (wrap-json-body)))
 
 
