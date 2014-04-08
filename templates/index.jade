@@ -12,5 +12,14 @@ block body
             {{ value.temp }}
           div.sensorvalue
             {{ value.hum }}
+
+  div(ng-controller='tempGraphCtrl')
+    nvd3-line-chart(data="exampleData",
+        showXAxis="true",
+        showYAxis="true",
+        tooltips="true",
+        interactive="true",
+        showLegend="true")
+
   script(src='js/bundle.js')
 

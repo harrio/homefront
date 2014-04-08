@@ -16,7 +16,7 @@ exports.tempCtrl = function($scope, $http, $interval) {
       error(function(data, status, headers, config) {
         console.log("temps failed: " + status);
       });
-    }, 1000);
+    }, 60000);
   };
 
   $scope.stopFetch = function() {

@@ -16,16 +16,28 @@ var paths = {
 var brConfig = {
 	shim: {
     angular: {
-      path: './bower_components/angular/angular.js',
+      path: './resources/public/bower_components/angular/angular.js',
       exports: 'angular'
     },
     ngRoute: {
-      path: './bower_components/angular-route/angular-route.js',
+      path: './resources/public/bower_components/angular-route/angular-route.js',
       exports: 'ngRoute'
     },
     ngSocket: {
-      path: './bower_components/angular-socket-io/socket.js',
+      path: './resources/public/bower_components/angular-socket-io/socket.js',
       exports: 'socketFactory'
+    },
+    d3: {
+      path: './resources/public/bower_components/d3/d3.js',
+      exports: 'd3'
+    },
+    nvd3: {
+      path: './resources/public/bower_components/nvd3/nv.d3.js',
+      exports: 'nv'
+    },
+    nvd3ChartDirectives: {
+      path: './resources/public/bower_components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js',
+      exports: 'nvd3ChartDirectives'
     }
   },
   debug: true
