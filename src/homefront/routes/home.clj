@@ -38,7 +38,7 @@
                (let [start-time (get-in ctx [:request :params :start])
                      end-time (get-in ctx [:request :params :end])]
                  (println "get sensors" start-time end-time)
-                 (generate-string (find-sensor-data (parse-time start-time) (parse-time end-time)))))
+                 (generate-string (get-grouped-sensor-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
 (defresource save-data

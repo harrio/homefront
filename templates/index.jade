@@ -14,12 +14,32 @@ block body
             {{ value.hum }}
 
   div(ng-controller='tempGraphCtrl')
-    nvd3-line-chart(data="exampleData",
+
+    nvd3-line-chart(data="tempData1",
+        width="1024",
+        height="512",
         showXAxis="true",
         showYAxis="true",
         tooltips="true",
         interactive="true",
-        showLegend="true")
+        showLegend="true",
+        x="getX()",
+        y="getY()",
+        xAxisTickFormat="xAxisTickFormat()",
+        clipVoronoi="false")
+
+    nvd3-line-chart(data="tempData2",
+        width="1024",
+        height="512",
+        showXAxis="true",
+        showYAxis="true",
+        tooltips="true",
+        interactive="true",
+        showLegend="true",
+        x="getX()",
+        y="getY()",
+        xAxisTickFormat="xAxisTickFormat()",
+        clipVoronoi="false")
 
   script(src='js/bundle.js')
 

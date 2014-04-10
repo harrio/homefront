@@ -10,6 +10,9 @@
 (connect!)
 (set-db! (monger.core/get-db "homefront"))
 
+(defn apply-to-map-values [m func]
+  (into {} (for [[key value] m] [key (func value)])))
+
 (defn insert-sensor-data [data-obj]
   (doseq [entry (data-obj "data")]
     (let [oid (ObjectId.)]
@@ -20,5 +23,8 @@
 
 (defn find-sensor-data [start-time end-time]
   (mc/find-maps "sensordata" { :time { $gte start-time $lte end-time }}))
+
+(defn get-grouped-sensor-data [start-time end-time]
+  (vals (apply-to-map-values (group-by :addr (find-sensor-data start-time end-time)) #(group-by :id %))))
   
 

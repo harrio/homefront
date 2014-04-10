@@ -31,5 +31,5 @@ exports.tempCtrl = function($scope, $http, $interval) {
     $scope.stopFetch();
   });
 
-  $scope.fetchSensors();
+  //$scope.fetchSensors();
 };
