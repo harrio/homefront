@@ -60,5 +60,8 @@ section.content
                         div.form-group
                           label(for="humidity") Humidity
                           input.form-control(type="checkbox", id="humidity", ng-model="selectedProbe.humidity")
+                      div.box-footer
+                        button.btn.btn-primary.margin(type="submit", ng-click="saveProbe()") Save
             div.box-footer
-              button.btn.btn-primary(type="submit", ng-click="saveSensor()") Save
+              button.btn.btn-primary.margin(type="submit", ng-click="saveSensor()") Save
+              button.btn.btn-warning(ng-click="deleteSensor()") Delete
