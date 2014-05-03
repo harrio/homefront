@@ -14,24 +14,41 @@ exports.sensorCtrl = function($scope, $http, $interval) {
       });
   };
 
-  $scope.open = function(item){
-    if ($scope.isOpen(item)){
-      $scope.opened = undefined;
+  $scope.selectSensor = function(item){
+    if ($scope.isSelectedSensor(item)){
+      $scope.selectedSensor = undefined;
     } else {
-      $scope.opened = item;
+      $scope.selectedSensor = item;
+    }
+    $scope.selectedProbe = undefined;
+  };
+
+  $scope.isSelectedSensor = function(item){
+    return $scope.selectedSensor === item;
+  };
+    
+  $scope.anySensorSelected = function() {
+    return $scope.selectedSensor !== undefined;
+  };
+
+  $scope.selectProbe = function(item){
+    if ($scope.isSelectedProbe(item)){
+      $scope.selectedProbe = undefined;
+    } else {
+      $scope.selectedProbe = item;
     }
   };
 
-  $scope.isOpen = function(item){
-    return $scope.opened === item;
+  $scope.isSelectedProbe = function(item){
+    return $scope.selectedProbe === item;
   };
     
-  $scope.anyItemOpen = function() {
-    return $scope.opened !== undefined;
+  $scope.anyProbeSelected = function() {
+    return $scope.selectedProbe !== undefined;
   };
     
   $scope.close = function() {
-    $scope.opened = undefined;
+    $scope.selectedSensor = undefined;
   };
 
   $scope.fetchSensors();

@@ -1,56 +1,64 @@
-section(class="content")
-  div(class="row")
-    div(class="col-xs-12")
-      div(class="box")
-        div(class="box-header")
-          h3(class="box-title")
+section.content
+  div.row
+    div.col-xs-12
+      div.box
+        div.box-header
+          h3.box-title
             | Sensors                                    
-        div(class="box-body table-responsive")
-          table(id="sensortable", class="table table-bordered table-hover")
+        div.box-body.table-responsive
+          table.table.table-bordered.table-hover(id="sensortable")
             thead
               tr
                 th Name
                 th MAC
             tbody
-              tr(ng-repeat="sensor in sensors", ng-click="open(sensor)")            
+              tr(ng-repeat="sensor in sensors", ng-click="selectSensor(sensor)", ng-class="{selected: sensor === selectedSensor}")            
                 td {{ sensor.name }}
                 td {{ sensor.mac }}
 
 
-
-    ng-switch(on="anyItemOpen()")
-      div(class="col-md-6", ng-switch-when="true")
-        div(class="box")
-          div(class="box-header")
-            h4(class="box-title")
-              | Sensor  
-
-          form(role="form")
-            div(class="box-body")
-              div(class="form-group")
-                label(for="name") Name
-                input(type="text", class="form-control", id="name", ng-model="opened.name")
-              div(class="form-group")
-                label(for="mac") MAC
-                input(type="text", class="form-control", id="mac", data-inputmask-regex="^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$", data-mask, ng-model="opened.mac")
-            div(class="box-footer")
-              button(type="submit", class="btn btn-primary", ng-click="saveSensor()") Save
-
-      div(class="col-md-6", ng-switch-when="true")
-        div(class="box")
-          div(class="box-header")
-            h4(class="box-title")
-              | Probes  
-          div(class="box-body table-responsive")
-            table(id="probetable", class="table table-bordered table-hover")
-              thead
-                tr
-                  th Name
-                  th Id
-                  th Humidity
-              tbody
-                tr(ng-repeat="probe in opened.probes", ng-click="openProbe(probe)")            
-                  td {{ probe.name }}
-                  td {{ probe.id }}
-                  td 
-                    i(class="fa fa-check", ng-if="probe.humidity")
+  div.row
+    ng-switch(on="anySensorSelected()")
+      div.col-xs-12(ng-switch-when="true")
+        div.box.box-solid
+          div.box-body
+            div.row
+              div.col-md-6.col-sm-6
+                form(role="form")
+                  div.box-body
+                    div.form-group
+                      label(for="name") Name
+                      input.form-control(type="text", id="name", ng-model="selectedSensor.name")
+                    div.form-group
+                      label(for="mac") MAC
+                      input.form-control(type="text", id="mac", data-inputmask-regex="^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$", data-mask, ng-model="selectedSensor.mac")
+              div.col-md-6.col-sm-6     
+                label(for="probetable") Probes
+                div.box-body.table-responsive
+                  table.table.table-bordered.table-hover(id="probetable")
+                    thead
+                      tr
+                        th Name
+                        th Id
+                        th Humidity
+                    tbody
+                      tr(ng-repeat="probe in selectedSensor.probes", ng-click="selectProbe(probe)", ng-class="{selected: probe === selectedProbe}")            
+                        td {{ probe.name }}
+                        td {{ probe.id }}
+                        td 
+                          i.fa.fa-check(ng-if="probe.humidity")
+                ng-switch(on="anyProbeSelected()")
+                  div(ng-switch-when="true")
+                    form(role="form")
+                      div.box-body
+                        div.form-group
+                          label(for="name") Name
+                          input.form-control(type="text", id="name", ng-model="selectedProbe.name")
+                        div(class="form-group")
+                          label(for="id") Id
+                          input.form-control(type="text", id="id", ng-model="selectedProbe.id")
+                        div.form-group
+                          label(for="humidity") Humidity
+                          input.form-control(type="checkbox", id="humidity", ng-model="selectedProbe.humidity")
+            div.box-footer
+              button.btn.btn-primary(type="submit", ng-click="saveSensor()") Save
