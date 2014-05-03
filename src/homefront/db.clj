@@ -1,10 +1,12 @@
 (ns homefront.db
+  (:refer-clojure :exclude [sort find])
   (:require [monger.core :refer [connect! set-db!]]
             [monger.collection :as mc]
             [monger.operators :refer :all]
             [cheshire.core :refer :all]
             [clj-time.core :as time]
-            monger.joda-time)
+            monger.joda-time
+            [monger.query :refer :all])
   (:import [org.bson.types ObjectId]))
 
 (connect!)
@@ -22,9 +24,21 @@
   (insert-sensor-data (parse-string json)))
 
 (defn find-sensor-data [start-time end-time]
-  (mc/find-maps "sensordata" { :time { $gte start-time $lte end-time }}))
+  (with-collection "sensordata" 
+    (find { :time { $gte start-time $lte end-time }})
+    (sort (array-map :time 1))))
+
+(defn find-single-sensor-data [mac start-time end-time]
+  (mc/find-maps "sensordata" { :addr mac :time { $gte start-time $lte end-time }}))
 
 (defn get-grouped-sensor-data [start-time end-time]
-  (vals (apply-to-map-values (group-by :addr (find-sensor-data start-time end-time)) #(group-by :id %))))
+  (vals (apply-to-map-values (group-by :addr (find-sensor-data start-time end-time)) #(vals (group-by :id %)))))
+
+(defn get-single-sensor-data [mac start-time end-time]
+  (group-by :id (find-single-sensor-data mac start-time end-time)))
+
+(defn find-sensors []
+  (println "sensors")
+  (mc/find-maps "sensor"))
   
 

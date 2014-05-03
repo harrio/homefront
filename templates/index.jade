@@ -1,45 +1,243 @@
-extends layout
+doctype html
+html(ng-app="myApp")
+  head
+    meta(charset='UTF-8')
+    title Homefront | Dashboard
+    meta(content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no', name='viewport')
+    link(href='css/bootstrap.css', rel='stylesheet', type='text/css')
+    link(href='css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    link(href='css/ionicons.min.css', rel='stylesheet', type='text/css')
+    link(href='css/AdminLTE.css', rel='stylesheet', type='text/css')
 
-block body
-  div(ng-controller='tempCtrl')
-    div(ng-repeat="sensor in sensors")
-      {{ sensor.name }} {{ sensor.data.timestamp | date:'dd.MM.yyyy HH:mm:ss' }}
-      ul
-        li(ng-repeat="value in sensor.data.values")
-          div.sensorvalue
-            [{{ value.name }}] 
-          div.sensorvalue
-            {{ value.temp }}
-          div.sensorvalue
-            {{ value.hum }}
-
-  div(ng-controller='tempGraphCtrl')
-
-    nvd3-line-chart(data="tempData1",
-        width="1024",
-        height="512",
-        showXAxis="true",
-        showYAxis="true",
-        tooltips="true",
-        interactive="true",
-        showLegend="true",
-        x="getX()",
-        y="getY()",
-        xAxisTickFormat="xAxisTickFormat()",
-        clipVoronoi="false")
-
-    nvd3-line-chart(data="tempData2",
-        width="1024",
-        height="512",
-        showXAxis="true",
-        showYAxis="true",
-        tooltips="true",
-        interactive="true",
-        showLegend="true",
-        x="getX()",
-        y="getY()",
-        xAxisTickFormat="xAxisTickFormat()",
-        clipVoronoi="false")
-
-  script(src='js/bundle.js')
-
+  body.skin-blue
+    // header logo: style can be found in header.less
+    header.header
+      a.logo(href='index.html')
+        // Add the class icon to your logo image or logo icon to add the margining
+        | Homefront
+      // Header Navbar: style can be found in header.less
+      nav.navbar.navbar-static-top(role='navigation')
+        // Sidebar toggle button
+        a.navbar-btn.sidebar-toggle(href='#', data-toggle='offcanvas', role='button')
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        .navbar-right
+          ul.nav.navbar-nav
+            // Notifications: style can be found in dropdown.less
+            li.dropdown.notifications-menu
+              a.dropdown-toggle(href='#', data-toggle='dropdown')
+                i.fa.fa-warning
+                span.label.label-warning 10
+              ul.dropdown-menu
+                li.header You have 10 notifications
+                li
+                  // inner menu: contains the actual data
+                  ul.menu
+                    li
+                      a(href='#')
+                        i.ion.ion-ios7-people.info
+                        | 5 new members joined today
+                    li
+                      a(href='#')
+                        i.fa.fa-warning.danger
+                        | Very long description here that may not fit into the page and may cause design problems
+                    li
+                      a(href='#')
+                        i.fa.fa-users.warning
+                        | 5 new members joined
+                    li
+                      a(href='#')
+                        i.ion.ion-ios7-cart.success
+                        | 25 sales made
+                    li
+                      a(href='#')
+                        i.ion.ion-ios7-person.danger
+                        | You changed your username
+                li.footer
+                  a(href='#') View all
+            // User Account: style can be found in dropdown.less
+            li.dropdown.user.user-menu
+              a.dropdown-toggle(href='#', data-toggle='dropdown')
+                i.glyphicon.glyphicon-user
+                span
+                  | Jane Doe
+                  i.caret
+              ul.dropdown-menu
+                // User image
+                li.user-header.bg-light-blue
+                  p
+                    | Jane Doe
+                // Menu Footer
+                li.user-footer
+                  .pull-left
+                    a.btn.btn-default.btn-flat(href='#') Profile
+                  .pull-right
+                    a.btn.btn-default.btn-flat(href='#') Sign out
+    .wrapper.row-offcanvas.row-offcanvas-left
+      // Left side column. contains the logo and sidebar
+      aside.left-side.sidebar-offcanvas
+        // sidebar: style can be found in sidebar.less
+        section.sidebar
+          // sidebar menu: : style can be found in sidebar.less
+          ul.sidebar-menu
+            li.active
+              a(href='index.html')
+                i.fa.fa-dashboard
+                span Dashboard
+            li
+              a(href='pages/widgets.html')
+                i.fa.fa-th
+                span Widgets
+                small.badge.pull-right.bg-green new
+            li.treeview
+              a(href='#')
+                i.fa.fa-bar-chart-o
+                span Charts
+                i.fa.fa-angle-left.pull-right
+              ul.treeview-menu
+                li
+                  a(href='pages/charts/morris.html')
+                    i.fa.fa-angle-double-right
+                    | Morris
+                li
+                  a(href='/')
+                    i.fa.fa-angle-double-right
+                    | Charts
+                li
+                  a(href='pages/charts/inline.html')
+                    i.fa.fa-angle-double-right
+                    | Inline charts
+            li.treeview
+              a(href='#')
+                i.fa.fa-laptop
+                span UI Elements
+                i.fa.fa-angle-left.pull-right
+              ul.treeview-menu
+                li
+                  a(href='/sensors')
+                    i.fa.fa-angle-double-right
+                    | Sensors
+                li
+                  a(href='pages/UI/icons.html')
+                    i.fa.fa-angle-double-right
+                    | Icons
+                li
+                  a(href='pages/UI/buttons.html')
+                    i.fa.fa-angle-double-right
+                    | Buttons
+                li
+                  a(href='pages/UI/sliders.html')
+                    i.fa.fa-angle-double-right
+                    | Sliders
+                li
+                  a(href='pages/UI/timeline.html')
+                    i.fa.fa-angle-double-right
+                    | Timeline
+            li.treeview
+              a(href='#')
+                i.fa.fa-edit
+                span Forms
+                i.fa.fa-angle-left.pull-right
+              ul.treeview-menu
+                li
+                  a(href='pages/forms/general.html')
+                    i.fa.fa-angle-double-right
+                    | General Elements
+                li
+                  a(href='pages/forms/advanced.html')
+                    i.fa.fa-angle-double-right
+                    | Advanced Elements
+                li
+                  a(href='pages/forms/editors.html')
+                    i.fa.fa-angle-double-right
+                    | Editors
+            li.treeview
+              a(href='#')
+                i.fa.fa-table
+                span Tables
+                i.fa.fa-angle-left.pull-right
+              ul.treeview-menu
+                li
+                  a(href='pages/tables/simple.html')
+                    i.fa.fa-angle-double-right
+                    | Simple tables
+                li
+                  a(href='pages/tables/data.html')
+                    i.fa.fa-angle-double-right
+                    | Data tables
+            li
+              a(href='pages/calendar.html')
+                i.fa.fa-calendar
+                span Calendar
+                small.badge.pull-right.bg-red 3
+            li
+              a(href='pages/mailbox.html')
+                i.fa.fa-envelope
+                span Mailbox
+                small.badge.pull-right.bg-yellow 12
+            li.treeview
+              a(href='#')
+                i.fa.fa-folder
+                span Examples
+                i.fa.fa-angle-left.pull-right
+              ul.treeview-menu
+                li
+                  a(href='pages/examples/invoice.html')
+                    i.fa.fa-angle-double-right
+                    | Invoice
+                li
+                  a(href='pages/examples/login.html')
+                    i.fa.fa-angle-double-right
+                    | Login
+                li
+                  a(href='pages/examples/register.html')
+                    i.fa.fa-angle-double-right
+                    | Register
+                li
+                  a(href='pages/examples/lockscreen.html')
+                    i.fa.fa-angle-double-right
+                    | Lockscreen
+                li
+                  a(href='pages/examples/404.html')
+                    i.fa.fa-angle-double-right
+                    | 404 Error
+                li
+                  a(href='pages/examples/500.html')
+                    i.fa.fa-angle-double-right
+                    | 500 Error
+                li
+                  a(href='pages/examples/blank.html')
+                    i.fa.fa-angle-double-right
+                    | Blank Page
+        // /.sidebar
+      // Right side column. Contains the navbar and content of the page
+      aside.right-side
+        // Content Header (Page header)
+        section.content-header
+          h1
+            | Blank page
+            small Control panel
+          ol.breadcrumb
+            li
+              a(href='#')
+                i.fa.fa-dashboard
+                | Home
+            li.active Blank page
+        // Main content
+        section.content
+          div(ng-view)
+        // /.content
+      // /.right-side
+    // ./wrapper
+    script(src='js/bundle.js')
+    script(src='js/bootstrap.min.js', type='text/javascript')
+    script(src='js/AdminLTE/app.js', type='text/javascript')
+    script(src='js/flot/jquery.flot.js')
+    script(src='js/flot/jquery.flot.resize.js')
+    script(src='js/flot/jquery.flot.time.js')
+    script(src='js/jquery.flot.tooltip.js')
+    script(src='js/input-mask/jquery.inputmask.js')
+    script(src='js/input-mask/jquery.inputmask.regex.extensions.js')
+    

@@ -6,7 +6,6 @@
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.sensor :refer :all]
             [homefront.db :refer :all]
             monger.json))
 
@@ -32,13 +31,29 @@
    (fn [{{{resource :resource} :route-params} :request}]
     (.lastModified (file (str (io/resource-path) "/index.html")))))
 
-(defresource get-sensors
+(defresource sensors
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx] 
+               (generate-string (find-sensors)))
+  :available-media-types ["application/json"])
+
+(defresource sensor-data
   :allowed-methods [:get]
   :handle-ok (fn [ctx] 
                (let [start-time (get-in ctx [:request :params :start])
                      end-time (get-in ctx [:request :params :end])]
                  (println "get sensors" start-time end-time)
                  (generate-string (get-grouped-sensor-data (parse-time start-time) (parse-time end-time)))))
+  :available-media-types ["application/json"])
+
+(defresource single-sensor-data
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx] 
+               (let [mac (get-in ctx [:request :params :mac])
+                     start-time (get-in ctx [:request :params :start])
+                     end-time (get-in ctx [:request :params :end])]
+                 (println "get sensors" mac start-time end-time)
+                 (generate-string (get-single-sensor-data mac (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
 (defresource save-data
@@ -50,5 +65,7 @@
 
 (defroutes home-routes
   (ANY "/" request home)
-  (GET "/sensors" request get-sensors)
+  (GET "/sensors" request sensors)
+  (GET "/sensorData" request sensor-data)
+  (GET "/singleSensorData" request single-sensor-data)
   (POST "/saveData" request save-data))

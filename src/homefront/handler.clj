@@ -7,7 +7,6 @@
             [compojure.route :as route]
             [cheshire.core :refer :all]
             [homefront.routes.home :refer :all]
-            [homefront.sensor :refer :all]
             [ring.middleware.basic-authentication :refer :all]
             [ring.middleware.json :refer :all]))
 (defn read-config []

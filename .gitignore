@@ -13,4 +13,4 @@ pom.xml
 .nrepl-port
 resources
 node_modules
-
+bower_components

@@ -1,0 +1,13 @@
+div(ng-repeat="sensor in sensors")
+  {{ sensor.name }} {{ sensor.data.timestamp | date:'dd.MM.yyyy HH:mm:ss' }}
+  ul
+    li(ng-repeat="value in sensor.data.values")
+      div.sensorvalue
+        [{{ value.name }}] 
+      div.sensorvalue
+        {{ value.temp }}
+      div.sensorvalue
+        {{ value.hum }}
+
+flot(dataset="flotData1", options="flotOptions", width="50%", height="500px")
+flot(dataset="flotData2", options="flotOptions", width="50%", height="500px")

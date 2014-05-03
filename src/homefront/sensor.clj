@@ -27,9 +27,6 @@
 (defn sensor-data [sensor] 
   (let [data (@temps (sensor "path"))]
     { :name (sensor "name") :data (get-probe-data sensor) }))
-                     
-(defn get-sensor-data [] 
-  (map sensor-data (@config "sensors")))
 
 (defn remove-port [path]
   (println "Remove port " path)

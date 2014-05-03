@@ -32,7 +32,7 @@ exports.tempGraphCtrl = function($scope, $http, $interval) {
   };
 
   $scope.fetchSensors = function() {
-    $http({method: 'GET', url: '/sensors', params: { start: "2014-04-06T00:00:00Z", end: "2014-04-07T00:00:00Z" }}).
+    $http({method: 'GET', url: '/sensorData', params: { start: "2014-04-06T00:00:00Z", end: "2014-04-07T00:00:00Z" }}).
         success(function(data, status, headers, config) {
           $scope.tempData1 = makeData(data[0]);
           $scope.tempData2 = makeData(data[1]);
