@@ -10,7 +10,8 @@
                                   get-grouped-sensor-data 
                                   get-single-sensor-data 
                                   insert-sensor-data-json
-                                  save-sensor-json]]
+                                  save-sensor-json
+                                  remove-sensor]]
             monger.json))
 
 
@@ -65,6 +66,7 @@
   :post! (fn [ctx]
            (let [body (get-in ctx [:request :body])]
              (insert-sensor-data-json body)))
+  :handle-ok "ok"
   :available-media-types ["application/json"])
 
 (defresource save-sensor
@@ -75,11 +77,17 @@
   :handle-ok "ok"
   :available-media-types ["application/json"])
 
+(defresource delete-sensor [sensor]
+  :allowed-methods [:delete]
+  :delete! (remove-sensor sensor)
+  :handle-ok "ok")
+
 (defroutes home-routes
   (ANY "/" request home)
   (GET "/sensors" request sensors)
   (GET "/sensorData" request sensor-data)
   (GET "/singleSensorData" request single-sensor-data)
   (POST "/saveData" request save-data)
-  (POST "/saveSensor" request save-sensor))
+  (POST "/saveSensor" request save-sensor)
+  (DELETE "/deleteSensor/:sensor" [sensor] (delete-sensor sensor)))
 

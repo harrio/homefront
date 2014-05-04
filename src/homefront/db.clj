@@ -51,3 +51,7 @@
 
 (defn save-sensor-json [json]
   (save-sensor json))
+
+(defn remove-sensor [sensor-id]
+  (let [oid (ObjectId. sensor-id)]
+    (mc/remove-by-id "sensor" oid)))

@@ -38,7 +38,15 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   $scope.deleteSensor = function() {
     var deleted = $scope.selectedSensor;
     $scope.close();
-    $scope.sensors = _.reject($scope.sensors, function(sensor) { return deleted._id === sensor._id; });
+    $http.delete('/deleteSensor/' + deleted._id).
+      success(function(data) {
+        $scope.fetchSensors();
+        $scope.showSaveOk = true;
+      }).
+      error(function(data) {
+        $scope.fetchSensors();
+        $scope.showSaveFailed = true;
+      });
   };
 
   $scope.addSensor = function() {

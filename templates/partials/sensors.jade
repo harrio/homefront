@@ -34,6 +34,9 @@ section.content
                       label(for="name") Name
                       input.form-control(type="text", id="name", ng-model="selectedSensor.name")
                     div.form-group
+                      label(for="key") Key
+                      input.form-control(type="text", id="key", ng-model="selectedSensor.key")
+                    div.form-group
                       label(for="mac") MAC
                       input.form-control(type="text", id="mac", data-inputmask-regex="^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$", data-mask, ng-model="selectedSensor.mac")
               div.col-md-6.col-sm-6     
@@ -61,8 +64,8 @@ section.content
                           label(for="name") Name
                           input.form-control(type="text", id="name", ng-model="selectedProbe.name")
                         div(class="form-group")
-                          label(for="id") Id
-                          input.form-control(type="text", id="id", ng-model="selectedProbe.id")
+                          label(for="key") Key
+                          input.form-control(type="text", id="key", ng-model="selectedProbe.key")
                         div.form-group
                           label(for="humidity") Humidity
                           input.form-control(type="checkbox", id="humidity", ng-model="selectedProbe.humidity")
