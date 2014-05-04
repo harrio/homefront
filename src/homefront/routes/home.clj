@@ -6,7 +6,11 @@
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.db :refer :all]
+            [homefront.db :refer [find-sensors 
+                                  get-grouped-sensor-data 
+                                  get-single-sensor-data 
+                                  insert-sensor-data-json
+                                  save-sensor-json]]
             monger.json))
 
 
@@ -60,7 +64,15 @@
   :allowed-methods [:post]
   :post! (fn [ctx]
            (let [body (get-in ctx [:request :body])]
-             (insert-sensor-json body)))
+             (insert-sensor-data-json body)))
+  :available-media-types ["application/json"])
+
+(defresource save-sensor
+  :allowed-methods [:post]
+  :post! (fn [ctx]
+           (let [body (get-in ctx [:request :body])]
+             (save-sensor-json body)))
+  :handle-ok "ok"
   :available-media-types ["application/json"])
 
 (defroutes home-routes
@@ -68,4 +80,6 @@
   (GET "/sensors" request sensors)
   (GET "/sensorData" request sensor-data)
   (GET "/singleSensorData" request single-sensor-data)
-  (POST "/saveData" request save-data))
+  (POST "/saveData" request save-data)
+  (POST "/saveSensor" request save-sensor))
+

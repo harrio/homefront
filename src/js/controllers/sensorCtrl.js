@@ -1,11 +1,14 @@
 var $ = require('jquery');
 var _ = require('lodash');
 
-exports.sensorCtrl = function($scope, $http, $interval) {
+exports.sensorCtrl = function($scope, $http, $location, $interval) {
 
-  $("#mac").inputmask("Regex", { "oncomplete": function(){ alert('inputmask complete'); }});
-
+  $scope.showSaveFailed = false;
+  $scope.showSaveOk = false;
+  
   $scope.fetchSensors = function() {
+    $scope.showSaveOk = false;
+    $scope.showSaveFailed = false;
     $http({ method: 'GET', url: '/sensors' }).
         success(function(data, status, headers, config) {
           $scope.sensors = data;
@@ -38,6 +41,24 @@ exports.sensorCtrl = function($scope, $http, $interval) {
     $scope.sensors = _.reject($scope.sensors, function(sensor) { return deleted._id === sensor._id; });
   };
 
+  $scope.addSensor = function() {
+    var newSensor = { name: "", key: "", mac: "", active: true, probes: [] };
+    $scope.sensors.push(newSensor);
+    $scope.selectSensor(newSensor);
+  };
+
+  $scope.saveSensor = function() {
+    $http.post('/saveSensor', $scope.selectedSensor).
+      success(function(data) {
+        $scope.fetchSensors();
+        $scope.showSaveOk = true;
+      }).
+      error(function(data) {
+        $scope.fetchSensors();
+        $scope.showSaveFailed = true;
+      });
+  };
+
   $scope.selectProbe = function(item) {
     if ($scope.isSelectedProbe(item)) {
       $scope.selectedProbe = undefined;
@@ -59,6 +80,18 @@ exports.sensorCtrl = function($scope, $http, $interval) {
     probe.name = $scope.selectedProbe.name;
     probe.id = $scope.selectedProbe.id;
     probe.humidity = $scope.selectedProbe.humidity;
+  };
+
+  $scope.deleteProbe = function() {
+    var deleted = $scope.selectedProbe;
+    $scope.selectedProbe = undefined;
+    $scope.selectedSensor.probes = _.reject($scope.selectedSensor.probes, function(probe) { return deleted.id === probe.id; });
+  };
+
+  $scope.addProbe = function() {
+    var newProbe = { name: "", key: "", humidity: false };
+    $scope.selectedSensor.probes.push(newProbe);
+    $scope.selectProbe(newProbe);
   };
     
   $scope.close = function() {

@@ -20,7 +20,7 @@
     (let [oid (ObjectId.)]
       (mc/insert "sensordata" (merge entry { :addr (data-obj "addr") :_id oid :time (time/now) })))))
 
-(defn insert-sensor-json [json]
+(defn insert-sensor-data-json [json]
   (insert-sensor-data (parse-string json)))
 
 (defn find-sensor-data [start-time end-time]
@@ -41,4 +41,13 @@
   (println "sensors")
   (mc/find-maps "sensor"))
   
+(defn save-sensor [data-obj]
+  (println data-obj)
+  (if (contains? data-obj "_id")
+    (let [oid (ObjectId. (data-obj "_id"))]
+      (mc/update-by-id "sensor" oid (dissoc data-obj "_id")))
+    (let [oid (ObjectId.)]
+      (mc/insert "sensor" (merge data-obj { :_id oid  })))))
 
+(defn save-sensor-json [json]
+  (save-sensor json))

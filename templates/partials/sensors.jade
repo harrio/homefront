@@ -3,20 +3,24 @@ section.content
     div.col-xs-12
       div.box
         div.box-header
-          h3.box-title
-            | Sensors                                    
+          h3.box-title Sensors                                    
         div.box-body.table-responsive
           table.table.table-bordered.table-hover(id="sensortable")
             thead
               tr
                 th Name
+                th Key
                 th MAC
+                th Active
             tbody
               tr(ng-repeat="sensor in sensors", ng-click="selectSensor(sensor)", ng-class="{selected: sensor === selectedSensor}")            
                 td {{ sensor.name }}
+                td {{ sensor.key }}
                 td {{ sensor.mac }}
-
-
+                td 
+                  i.fa.fa-check(ng-if="sensor.active")
+        div.box-footer
+          button.btn.btn-primary.margin(ng-click="addSensor()") Add
   div.row
     ng-switch(on="anySensorSelected()")
       div.col-xs-12(ng-switch-when="true")
@@ -39,14 +43,16 @@ section.content
                     thead
                       tr
                         th Name
-                        th Id
+                        th Key
                         th Humidity
                     tbody
                       tr(ng-repeat="probe in selectedSensor.probes", ng-click="selectProbe(probe)", ng-class="{selected: probe === selectedProbe}")            
                         td {{ probe.name }}
-                        td {{ probe.id }}
+                        td {{ probe.key }}
                         td 
                           i.fa.fa-check(ng-if="probe.humidity")
+                div.box-footer
+                  button.btn.btn-primary.margin(ng-click="addProbe()") Add 
                 ng-switch(on="anyProbeSelected()")
                   div(ng-switch-when="true")
                     form(role="form")
@@ -61,7 +67,11 @@ section.content
                           label(for="humidity") Humidity
                           input.form-control(type="checkbox", id="humidity", ng-model="selectedProbe.humidity")
                       div.box-footer
-                        button.btn.btn-primary.margin(type="submit", ng-click="saveProbe()") Save
+                        button.btn.btn-primary.margin(type="submit", ng-click="saveProbe()") Ok
+                        button.btn.btn-warning(ng-click="deleteProbe()") Delete
             div.box-footer
               button.btn.btn-primary.margin(type="submit", ng-click="saveSensor()") Save
-              button.btn.btn-warning(ng-click="deleteSensor()") Delete
+              button.btn.btn-warning.margin(ng-click="deleteSensor()") Delete
+              div.alert.alert-success(ng-show="showSaveOk") Save ok
+              div.alert.alert-danger(ng-show="showSaveFailed") Save failed
+   
