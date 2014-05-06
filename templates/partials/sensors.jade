@@ -49,7 +49,7 @@ section.content
                         th Key
                         th Humidity
                     tbody
-                      tr(ng-repeat="probe in selectedSensor.probes", ng-click="selectProbe(probe)", ng-class="{selected: probe === selectedProbe}")            
+                      tr(ng-repeat="probe in selectedSensor.probes", ng-click="selectProbe(probe, $index)", ng-class="{selected: probe === selectedProbe}")            
                         td {{ probe.name }}
                         td {{ probe.key }}
                         td 

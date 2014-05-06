@@ -22,7 +22,7 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
     if ($scope.isSelectedSensor(item)) {
       $scope.selectedSensor = undefined;
     } else {
-      $scope.selectedSensor = item;
+      $scope.selectedSensor = angular.copy(item);
     }
     $scope.selectedProbe = undefined;
   };
@@ -67,11 +67,12 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
       });
   };
 
-  $scope.selectProbe = function(item) {
+  $scope.selectProbe = function(item, $index) {
     if ($scope.isSelectedProbe(item)) {
       $scope.selectedProbe = undefined;
     } else {
       $scope.selectedProbe = angular.copy(item);
+      $scope.selectedProbeIndex = $index;
     }
   };
 
@@ -84,21 +85,28 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   };
 
   $scope.saveProbe = function() {
-    var probe = _.find($scope.selectedSensor.probes, function(item) { return item.id === $scope.selectedProbe.id; });
+    //var probe = _.find($scope.selectedSensor.probes, function(item) { return item._id === $scope.selectedProbe._id; });
+    var probe = $scope.selectedSensor.probes[$scope.selectedProbeIndex];
+    if (probe === undefined) {
+      probe = { name: "", key: "", humidity: false };
+      $scope.selectedSensor.probes.push(probe);
+    }
     probe.name = $scope.selectedProbe.name;
-    probe.id = $scope.selectedProbe.id;
+    probe.key = $scope.selectedProbe.key;
     probe.humidity = $scope.selectedProbe.humidity;
   };
 
   $scope.deleteProbe = function() {
     var deleted = $scope.selectedProbe;
     $scope.selectedProbe = undefined;
-    $scope.selectedSensor.probes = _.reject($scope.selectedSensor.probes, function(probe) { return deleted.id === probe.id; });
+    $scope.selectedSensor.probes = _.reject($scope.selectedSensor.probes, function(probe) { return deleted._id === probe._id; });
   };
 
   $scope.addProbe = function() {
+    if ($scope.selectedSensor.probes === undefined) {
+      $scope.selectedSensor.probes = [];
+    }
     var newProbe = { name: "", key: "", humidity: false };
-    $scope.selectedSensor.probes.push(newProbe);
     $scope.selectProbe(newProbe);
   };
     
