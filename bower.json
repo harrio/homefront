@@ -24,7 +24,8 @@
     "nvd3": "pmlrsg/nvd3",
     "angularjs-nvd3-directives": "~0.0.7",
     "angular-flot": "0.0.3",
-    "flot.tooltip": "~0.6.7"
+    "flot.tooltip": "~0.6.7",
+    "notify": "azder/notifyjs-dist"
   },
   "resolutions": {
     "angular": "1.2.8"

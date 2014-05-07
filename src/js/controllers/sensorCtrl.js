@@ -41,11 +41,11 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
     $http.delete('/deleteSensor/' + deleted._id).
       success(function(data) {
         $scope.fetchSensors();
-        $scope.showSaveOk = true;
+        $.notify("Sensor deleted", "success");
       }).
       error(function(data) {
         $scope.fetchSensors();
-        $scope.showSaveFailed = true;
+        $.notify("Delete failed", "error");
       });
   };
 
@@ -59,11 +59,11 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
     $http.post('/saveSensor', $scope.selectedSensor).
       success(function(data) {
         $scope.fetchSensors();
-        $scope.showSaveOk = true;
+        $.notify("Sensor saved", "success");
       }).
       error(function(data) {
         $scope.fetchSensors();
-        $scope.showSaveFailed = true;
+        $.notify("Save failed", "error");
       });
   };
 
@@ -85,7 +85,6 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   };
 
   $scope.saveProbe = function() {
-    //var probe = _.find($scope.selectedSensor.probes, function(item) { return item._id === $scope.selectedProbe._id; });
     var probe = $scope.selectedSensor.probes[$scope.selectedProbeIndex];
     if (probe === undefined) {
       probe = { name: "", key: "", humidity: false };
@@ -97,9 +96,9 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   };
 
   $scope.deleteProbe = function() {
-    var deleted = $scope.selectedProbe;
+    var deleted = $scope.selectedSensor.probes[$scope.selectedProbeIndex];
     $scope.selectedProbe = undefined;
-    $scope.selectedSensor.probes = _.reject($scope.selectedSensor.probes, function(probe) { return deleted._id === probe._id; });
+    $scope.selectedSensor.probes = _.reject($scope.selectedSensor.probes, function(probe) { return deleted === probe; });
   };
 
   $scope.addProbe = function() {

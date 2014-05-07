@@ -6,6 +6,8 @@ require('d3');
 require('nvd3');
 require('nvd3ChartDirectives');
 require('angularFlot');
+require('notify');
+require('notifyStyle');
 
 // Declare app level module which depends on filters, and services
 var myApp = angular.module('myApp', ['ngRoute', 'nvd3ChartDirectives', 'angular-flot']);
@@ -21,7 +23,7 @@ myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $l
         templateUrl: 'partials/dashboard.html',
         controller: 'dashboardCtrl'
       }).
-      when('/sensors', {
+      when('/sensoradmin', {
         templateUrl: 'partials/sensors.html',
         controller: 'sensorCtrl'
       }).

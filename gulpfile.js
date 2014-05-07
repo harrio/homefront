@@ -71,6 +71,14 @@ var brConfig = {
     angularFlot: {
       path: './bower_components/angular-flot/angular-flot.js',
       exports: 'angularFlot'
+    },
+    notify: {
+      path: './bower_components/notify/notify.js',
+      exports: 'notify'
+    },
+    notifyStyle: {
+      path: './bower_components/notify/styles/bootstrap/notify-bootstrap.js',
+      exports: 'notifyStyle'
     }
   },
   debug: true
