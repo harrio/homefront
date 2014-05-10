@@ -17,7 +17,7 @@ section.content
                 th MAC
                 th Active
             tbody
-              tr(ng-repeat="sensor in sensors", ng-click="selectSensor(sensor)", ng-class="{selected: sensor === selectedSensor}")            
+              tr(ng-repeat="sensor in sensors", ng-click="selectSensor(sensor)", ng-class="{selected: sensor._id === selectedSensor._id}")            
                 td {{ sensor.name }}
                 td {{ sensor.key }}
                 td {{ sensor.mac }}
@@ -53,7 +53,7 @@ section.content
                         th Key
                         th Humidity
                     tbody
-                      tr(ng-repeat="probe in selectedSensor.probes", ng-click="selectProbe(probe, $index)", ng-class="{selected: probe === selectedProbe}")            
+                      tr(ng-repeat="probe in selectedSensor.probes", ng-click="selectProbe(probe, $index)", ng-class="{selected: $index === selectedProbeIndex}")            
                         td {{ probe.name }}
                         td {{ probe.key }}
                         td 
