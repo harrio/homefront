@@ -3,6 +3,8 @@ var browserify = require('gulp-browserify');
 var rename = require('gulp-rename');
 var jade = require('gulp-jade');
 var minifyCSS = require('gulp-minify-css');
+var less = require('gulp-less');
+var path = require('path');
 
 var paths = {
   scripts: ['src/js/**/*.js', 'templates/*'],
@@ -10,7 +12,8 @@ var paths = {
   fonts: ['fonts/*'],
   nonBundleJs: ['bower_components/bootstrap/dist/js/bootstrap.min.js',
   'bower_components/flot.tooltip/js/jquery.flot.tooltip.js',
-  'lib/js/**/*.js']
+  'lib/js/**/*.js'],
+  less: ['src/less/homefront.less']
 };
 
 gulp.task('templates', function() {
@@ -23,6 +26,14 @@ gulp.task('minify-css', function() {
 
   gulp.src(paths.css)
     .pipe(minifyCSS())
+    .pipe(gulp.dest('./resources/public/css/'));
+});
+
+gulp.task('less', function () {
+  gulp.src(paths.less)
+    .pipe(less({
+      paths: [ path.join(__dirname, 'less', 'includes') ]
+    }))
     .pipe(gulp.dest('./resources/public/css/'));
 });
 
@@ -97,4 +108,4 @@ gulp.task('watch', function () {
   gulp.watch(paths.scripts, ['scripts']);
 });
  
-gulp.task('default', ['scripts', 'non-bundle-js', 'templates', 'minify-css', 'fonts']);
+gulp.task('default', ['scripts', 'non-bundle-js', 'templates', 'less', 'minify-css', 'fonts']);

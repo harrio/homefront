@@ -13,6 +13,7 @@ require('notifyStyle');
 var myApp = angular.module('myApp', ['ngRoute', 'nvd3ChartDirectives', 'angular-flot']);
 
 myApp.controller('dashboardCtrl', require('./controllers/dashboardCtrl.js').dashboardCtrl);
+myApp.controller('chartCtrl', require('./controllers/chartCtrl.js').chartCtrl);
 myApp.controller('sensorCtrl', require('./controllers/sensorCtrl.js').sensorCtrl);
 myApp.controller('tempGraphCtrl', require('./controllers/tempGraphCtrl.js').tempGraphCtrl);
 myApp.directive('tempDirective', require('./directives/tempDirective.js').tempDirective);
@@ -22,6 +23,10 @@ myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $l
       when('/', {
         templateUrl: 'partials/dashboard.html',
         controller: 'dashboardCtrl'
+      }).
+      when('/charts', {
+        templateUrl: 'partials/charts.html',
+        controller: 'chartCtrl'
       }).
       when('/sensoradmin', {
         templateUrl: 'partials/sensors.html',

@@ -1,13 +1,97 @@
-div(ng-repeat="sensor in sensors")
-  {{ sensor.name }} {{ sensor.data.timestamp | date:'dd.MM.yyyy HH:mm:ss' }}
-  ul
-    li(ng-repeat="value in sensor.data.values")
-      div.sensorvalue
-        [{{ value.name }}] 
-      div.sensorvalue
-        {{ value.temp }}
-      div.sensorvalue
-        {{ value.hum }}
+section.content-header
+  h1
+    | Dashboard
+section.content
+  div.row
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-yellow
+        div.inner
+          h1 21.3&deg;
+          p Yläkerta
+        div.icon
+          i.ion.ion-arrow-up-a
+        div.small-box-footer
 
-flot(dataset="flotData1", options="flotOptions", width="50%", height="500px")
-flot(dataset="flotData2", options="flotOptions", width="50%", height="500px")
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-yellow
+        div.inner
+          h1 50.5%
+          p Kosteus
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+  div.row
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-teal
+        div.inner
+          h1 20.2&deg;
+          p Alakerta
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-teal
+        div.inner
+          h1 48.3%
+          p Kosteus
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-green
+        div.inner
+          h1 20.1&deg;
+          p Ulkoilma
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-green
+        div.inner
+          h1 70.3%
+          p Kosteus
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+  div.row
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-blue
+        div.inner
+          h1 16.2&deg;
+          p Kellari
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-blue
+        div.inner
+          h1 60.3%
+          p Kosteus
+        div.icon
+          i.ion.ion-arrow-up-a
+        div.small-box-footer
+
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-red
+        div.inner
+          h1 32.2&deg;
+          p Lähtevä vesi
+        div.icon
+          i.ion.ion-arrow-down-a
+        div.small-box-footer
+
+    div.col-lg-3.col-xs-6
+      div.small-box.bg-aqua
+        div.inner
+          h1 20.3&deg;
+          p Palaava vesi
+        div.icon
+          i.ion.ion-arrow-up-a
+        div.small-box-footer
+

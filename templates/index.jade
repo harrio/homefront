@@ -7,7 +7,6 @@ html(ng-app="myApp")
     link(href='css/bootstrap.css', rel='stylesheet', type='text/css')
     link(href='css/font-awesome.min.css', rel='stylesheet', type='text/css')
     link(href='css/ionicons.min.css', rel='stylesheet', type='text/css')
-    link(href='css/AdminLTE.css', rel='stylesheet', type='text/css')
     link(href='css/homefront.css', rel='stylesheet', type='text/css')
 
   body.skin-blue
@@ -30,32 +29,8 @@ html(ng-app="myApp")
             li.dropdown.notifications-menu
               a.dropdown-toggle(href='#', data-toggle='dropdown')
                 i.fa.fa-warning
-                span.label.label-warning 10
               ul.dropdown-menu
-                li.header You have 10 notifications
-                li
-                  // inner menu: contains the actual data
-                  ul.menu
-                    li
-                      a(href='#')
-                        i.ion.ion-ios7-people.info
-                        | 5 new members joined today
-                    li
-                      a(href='#')
-                        i.fa.fa-warning.danger
-                        | Very long description here that may not fit into the page and may cause design problems
-                    li
-                      a(href='#')
-                        i.fa.fa-users.warning
-                        | 5 new members joined
-                    li
-                      a(href='#')
-                        i.ion.ion-ios7-cart.success
-                        | 25 sales made
-                    li
-                      a(href='#')
-                        i.ion.ion-ios7-person.danger
-                        | You changed your username
+                li.header You have 0 notifications
                 li.footer
                   a(href='#') View all
             // User Account: style can be found in dropdown.less
@@ -63,13 +38,13 @@ html(ng-app="myApp")
               a.dropdown-toggle(href='#', data-toggle='dropdown')
                 i.glyphicon.glyphicon-user
                 span
-                  | Jane Doe
+                  | admin
                   i.caret
               ul.dropdown-menu
                 // User image
                 li.user-header.bg-light-blue
                   p
-                    | Jane Doe
+                    | admin
                 // Menu Footer
                 li.user-footer
                   .pull-left
@@ -87,11 +62,6 @@ html(ng-app="myApp")
               a(href='index.html')
                 i.fa.fa-dashboard
                 span Dashboard
-            li
-              a(href='pages/widgets.html')
-                i.fa.fa-th
-                span Widgets
-                small.badge.pull-right.bg-green new
             li.treeview
               a(href='#')
                 i.fa.fa-bar-chart-o
@@ -103,7 +73,7 @@ html(ng-app="myApp")
                     i.fa.fa-angle-double-right
                     | Morris
                 li
-                  a(href='/')
+                  a(href='/charts')
                     i.fa.fa-angle-double-right
                     | Charts
                 li
@@ -117,7 +87,7 @@ html(ng-app="myApp")
                 i.fa.fa-angle-left.pull-right
               ul.treeview-menu
                 li
-                  a(href='#/sensoradmin')
+                  a(href='/sensoradmin')
                     i.fa.fa-angle-double-right
                     | Sensors
                 li
@@ -136,100 +106,10 @@ html(ng-app="myApp")
                   a(href='pages/UI/timeline.html')
                     i.fa.fa-angle-double-right
                     | Timeline
-            li.treeview
-              a(href='#')
-                i.fa.fa-edit
-                span Forms
-                i.fa.fa-angle-left.pull-right
-              ul.treeview-menu
-                li
-                  a(href='pages/forms/general.html')
-                    i.fa.fa-angle-double-right
-                    | General Elements
-                li
-                  a(href='pages/forms/advanced.html')
-                    i.fa.fa-angle-double-right
-                    | Advanced Elements
-                li
-                  a(href='pages/forms/editors.html')
-                    i.fa.fa-angle-double-right
-                    | Editors
-            li.treeview
-              a(href='#')
-                i.fa.fa-table
-                span Tables
-                i.fa.fa-angle-left.pull-right
-              ul.treeview-menu
-                li
-                  a(href='pages/tables/simple.html')
-                    i.fa.fa-angle-double-right
-                    | Simple tables
-                li
-                  a(href='pages/tables/data.html')
-                    i.fa.fa-angle-double-right
-                    | Data tables
-            li
-              a(href='pages/calendar.html')
-                i.fa.fa-calendar
-                span Calendar
-                small.badge.pull-right.bg-red 3
-            li
-              a(href='pages/mailbox.html')
-                i.fa.fa-envelope
-                span Mailbox
-                small.badge.pull-right.bg-yellow 12
-            li.treeview
-              a(href='#')
-                i.fa.fa-folder
-                span Examples
-                i.fa.fa-angle-left.pull-right
-              ul.treeview-menu
-                li
-                  a(href='pages/examples/invoice.html')
-                    i.fa.fa-angle-double-right
-                    | Invoice
-                li
-                  a(href='pages/examples/login.html')
-                    i.fa.fa-angle-double-right
-                    | Login
-                li
-                  a(href='pages/examples/register.html')
-                    i.fa.fa-angle-double-right
-                    | Register
-                li
-                  a(href='pages/examples/lockscreen.html')
-                    i.fa.fa-angle-double-right
-                    | Lockscreen
-                li
-                  a(href='pages/examples/404.html')
-                    i.fa.fa-angle-double-right
-                    | 404 Error
-                li
-                  a(href='pages/examples/500.html')
-                    i.fa.fa-angle-double-right
-                    | 500 Error
-                li
-                  a(href='pages/examples/blank.html')
-                    i.fa.fa-angle-double-right
-                    | Blank Page
         // /.sidebar
       // Right side column. Contains the navbar and content of the page
       aside.right-side
-        // Content Header (Page header)
-        section.content-header
-          h1
-            | Blank page
-            small Control panel
-          ol.breadcrumb
-            li
-              a(href='#')
-                i.fa.fa-dashboard
-                | Home
-            li.active Blank page
-        // Main content
-        section.content
-          div(ng-view)
-        // /.content
+        div(ng-view)
       // /.right-side
     // ./wrapper
     script(src='js/bundle.js')
