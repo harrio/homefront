@@ -32,7 +32,7 @@ exports.dashboardCtrl = function($scope, $http, $interval) {
     if (angular.isDefined(stop)) {
       return;
     }
-  
+
     stop = $interval(function() {
       $http({method: 'GET', url: '/sensors'}).
         success(function(data, status, headers, config) {
@@ -80,8 +80,6 @@ exports.dashboardCtrl = function($scope, $http, $interval) {
           $scope.tempData1 = makeData(data[0]);
           $scope.tempData2 = makeData(data[1]);
 
-          $scope.flotData1 = makeFlot(data[0]);
-          $scope.flotData2 = makeFlot(data[1]);
           $scope.flotOptions = {
             grid: {
               hoverable: true,

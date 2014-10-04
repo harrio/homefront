@@ -18,3 +18,10 @@ CREATE TABLE temperature (
   value real NOT NULL,
   time timestamp NOT NULL
 );
+
+CREATE TABLE humidity (
+  hum_id serial PRIMARY KEY,
+  probe_id integer REFERENCES probe(probe_id) NOT NULL,
+  value real NOT NULL,
+  time timestamp NOT NULL
+);

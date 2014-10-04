@@ -1,7 +1,8 @@
 var angular = require('angular');
 var _ = require('lodash');
 
-var parseDate = d3.time.format("%Y%m%dT%H%M%S.%LZ").parse;
+var format = d3.time.format("%Y-%m-%dT%H:%M:%SZ");
+var parseDate = format.parse;
 
 var makeData = function(dataArrays) {
   var data = [];
@@ -13,8 +14,20 @@ var makeData = function(dataArrays) {
 };
 
 var makePoint = function(item) {
-  return [ parseDate(item.time), item.temp ];
+  return [ parseDate(item.time).getTime(), item.value ];
 };
+
+var makeProbe = function(probeData) {
+  return { label: probeData.name, data: _.map(probeData.temperature, makePoint) };
+}
+
+var makeSensor = function(sensorData) {
+  return { name: sensorData.name, data: _.map(sensorData.probe, makeProbe) };
+}
+
+var makeSensors = function(data) {
+  return _.map(data, makeSensor);
+}
 
 var makeFlot = function(dataArrays) {
   var data = [];
@@ -28,11 +41,61 @@ var makeFlot = function(dataArrays) {
 exports.chartCtrl = function($scope, $http, $interval) {
   var stop;
 
+  $scope.flotOptions = {
+              grid: {
+              hoverable: true,
+              borderColor: "#9d9d9d",
+              borderWidth: 1,
+              tickColor: "#9d9d9d"
+            },
+            series: {
+              shadowSize: 0,
+              lines: {
+                show: true
+              },
+              points: {
+                show: true
+              }
+            },
+            lines: {
+              fill: false,
+              color: ["#3c8dbc", "#f56954"]
+            },
+            tooltip: true,
+            tooltipOpts: {
+              content: "%s %x: %y",
+              shifts: {
+                x: -60,
+                y: 25
+              }
+            },
+            yaxis: {
+              show: true,
+              color: "#000000"
+            },
+            xaxis: {
+              axisLabel: "Time",
+              show: true,
+              color: "#000000",
+              mode: "time",
+              timeformat: "%d.%m.%Y %H:%M",
+              timezone: "browser"
+            }
+          };
+
+  $scope.startTime = new Date();
+  $scope.endTime = new Date();
+  $scope.format = 'dd.MM.yyyy';
+  $scope.dateOptions = {
+    formatYear: 'yy',
+    startingDay: 1
+  };
+
   $scope.fetchData = function() {
     if (angular.isDefined(stop)) {
       return;
     }
-  
+
     stop = $interval(function() {
       $http({method: 'GET', url: '/sensors'}).
         success(function(data, status, headers, config) {
@@ -74,52 +137,26 @@ exports.chartCtrl = function($scope, $http, $interval) {
     };
   };
 
-  $scope.fetchSensors = function() {
-    $http({method: 'GET', url: '/sensorData', params: { start: "2014-04-06T10:00:00Z", end: "2014-04-06T11:00:00Z" }}).
-        success(function(data, status, headers, config) {
-          $scope.tempData1 = makeData(data[0]);
-          $scope.tempData2 = makeData(data[1]);
+  $scope.openStart = function($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
 
-          $scope.flotData1 = makeFlot(data[0]);
-          $scope.flotData2 = makeFlot(data[1]);
-          $scope.flotOptions = {
-            grid: {
-              hoverable: true,
-              borderColor: "#f3f3f3",
-              borderWidth: 1,
-              tickColor: "#f3f3f3"
-            },
-            series: {
-              shadowSize: 0,
-              lines: {
-                show: true
-              },
-              points: {
-                show: true
-              }
-            },
-            lines: {
-              fill: false,
-              color: ["#3c8dbc", "#f56954"]
-            },
-            tooltip: true,
-            tooltipOpts: {
-              content: "%s %x: %y",
-              shifts: {
-                x: -60,
-                y: 25
-              }
-            },
-            yaxis: {
-              show: true,
-            },
-            xaxis: {
-              show: true,
-              mode: "time",
-              timeformat: "%d.%m.%Y %H:%M",
-              timezone: "browser"
-            }
-          };
+    $scope.startOpened = true;
+  };
+
+  $scope.openEnd = function($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    $scope.endOpened = true;
+  };
+
+  $scope.fetchSensors = function() {
+    $http({method: 'GET', url: '/sensorData', params: { start: format($scope.startTime), end: format($scope.endTime) }}).
+        success(function(data, status, headers, config) {
+
+          $scope.sensors = makeSensors(data);
+
       }).
       error(function(data, status, headers, config) {
         console.log("temps failed: " + status);

@@ -8,9 +8,10 @@ require('nvd3ChartDirectives');
 require('angularFlot');
 require('notify');
 require('notifyStyle');
+require('uiBootstrap');
 
 // Declare app level module which depends on filters, and services
-var myApp = angular.module('myApp', ['ngRoute', 'nvd3ChartDirectives', 'angular-flot']);
+var myApp = angular.module('myApp', ['ngRoute', 'nvd3ChartDirectives', 'angular-flot', 'ui.bootstrap']);
 
 myApp.controller('dashboardCtrl', require('./controllers/dashboardCtrl.js').dashboardCtrl);
 myApp.controller('chartCtrl', require('./controllers/chartCtrl.js').chartCtrl);

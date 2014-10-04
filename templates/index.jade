@@ -4,15 +4,15 @@ html(ng-app="myApp")
     meta(charset='UTF-8')
     title Homefront | Dashboard
     meta(content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no', name='viewport')
-    link(href='css/bootstrap.css', rel='stylesheet', type='text/css')
-    link(href='css/font-awesome.min.css', rel='stylesheet', type='text/css')
-    link(href='css/ionicons.min.css', rel='stylesheet', type='text/css')
-    link(href='css/homefront.css', rel='stylesheet', type='text/css')
+    link(href='/css/bootstrap.css', rel='stylesheet', type='text/css')
+    link(href='/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    link(href='/css/ionicons.min.css', rel='stylesheet', type='text/css')
+    link(href='/css/homefront.css', rel='stylesheet', type='text/css')
 
   body.skin-blue
     // header logo: style can be found in header.less
     header.header
-      a.logo(href='index.html')
+      a.logo(href='/')
         // Add the class icon to your logo image or logo icon to add the margining
         | Homefront
       // Header Navbar: style can be found in header.less
@@ -59,7 +59,7 @@ html(ng-app="myApp")
           // sidebar menu: : style can be found in sidebar.less
           ul.sidebar-menu
             li.active
-              a(href='index.html')
+              a(href='/')
                 i.fa.fa-dashboard
                 span Dashboard
             li.treeview
@@ -121,4 +121,5 @@ html(ng-app="myApp")
     script(src='js/jquery.flot.tooltip.js')
     script(src='js/input-mask/jquery.inputmask.js')
     script(src='js/input-mask/jquery.inputmask.regex.extensions.js')
-    
+    script(src='js/ui-bootstrap-tpls.min.js')
+

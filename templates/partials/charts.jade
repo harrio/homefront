@@ -1,13 +1,31 @@
-div(ng-repeat="sensor in sensors")
-  {{ sensor.name }} {{ sensor.data.timestamp | date:'dd.MM.yyyy HH:mm:ss' }}
-  ul
-    li(ng-repeat="value in sensor.data.values")
-      div.sensorvalue
-        [{{ value.name }}] 
-      div.sensorvalue
-        {{ value.temp }}
-      div.sensorvalue
-        {{ value.hum }}
+section.content-header
+  h1
+    | Charts
+section.content
+  div.row
+    div.col-xs-12
+      div.box.box-solid
+        div.box-body
+          div.row
+            form(role="form")
+              div.box-body
+                div.form-group
+                  label(for="startTime") Start time
+                  p.input-group
+                    input.form-control(type="text", id="startTime", datepicker-options="dateOptions", ng-model="startTime", datepicker-popup="{{format}}", is-open="startOpened")
+                    span.input-group-btn
+                      button.btn.btn-default(type="button", ng-click="openStart($event)")
+                        i.glyphicon.glyphicon-calendar
+                div.form-group
+                  label(for="endTime") End time
+                  p.input-group
+                    input.form-control(type="text", id="endTime", datepicker-options="dateOptions", ng-model="endTime", datepicker-popup="{{format}}", is-open="endOpened")
+                    span.input-group-btn
+                      button.btn.btn-default(type="button", ng-click="openEnd($event)")
+                        i.glyphicon.glyphicon-calendar
+        div.box-footer
+          button.btn.btn-primary.margin(type="submit", ng-click="fetchSensors()") Update
 
-flot(dataset="flotData1", options="flotOptions", width="50%", height="500px")
-flot(dataset="flotData2", options="flotOptions", width="50%", height="500px")
+  div(ng-repeat="sensor in sensors")
+    {{ sensor.name }}
+    flot(dataset="sensor.data", options="flotOptions", width="90%", height="300px")

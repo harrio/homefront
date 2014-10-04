@@ -24,7 +24,7 @@
         temps (@temps (sensor "path"))]
     { :timestamp (:timestamp temps) :values (map (probe-data (:data temps)) probes) }))
 
-(defn sensor-data [sensor] 
+(defn sensor-data [sensor]
   (let [data (@temps (sensor "path"))]
     { :name (sensor "name") :data (get-probe-data sensor) }))
 
@@ -47,7 +47,7 @@
       )
   ))
 
-(defn no-fresh-data [path] 
+(defn no-fresh-data [path]
   (let [last-received (:timestamp (@temps path))]
     (or (nil? last-received) (time/before? (time/plus last-received (time/seconds 30)) (time/now)))))
 

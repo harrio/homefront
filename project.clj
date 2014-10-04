@@ -1,6 +1,7 @@
 (defproject homefront "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
+  :repl-options {:init-ns homefront.repl}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [compojure "1.1.6"]
                  [hiccup "1.0.4"]
@@ -13,7 +14,11 @@
                  [http-kit "2.1.16"]
                  [com.novemberain/monger "1.7.0"]
                  [ring-basic-authentication "1.0.5"]
-                 [ring/ring-json "0.3.0"]]
+                 [ring/ring-json "0.3.0"]
+                 [korma "0.3.0"]
+                 [org.postgresql/postgresql "9.2-1002-jdbc4"]
+                 [prismatic/schema "0.3.0" :exclusions [org.clojure/tools.reader]]
+                 [org.clojure/tools.reader "0.8.8"]]
   :dev-dependencies [[lein-eclipse "1.0.0"]]
   :plugins [[lein-ring "0.8.7"] [no-man-is-an-island/lein-eclipse "2.0.0"]]
   :ring {:handler homefront.handler/app

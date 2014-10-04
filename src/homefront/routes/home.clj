@@ -1,21 +1,23 @@
 (ns homefront.routes.home
   (:require [compojure.core :refer :all]
+            [compojure.route :as route]
             [liberator.core :refer [defresource resource request-method-in]]
             [cheshire.core :refer [generate-string]]
             [cheshire.generate :refer :all]
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.db :refer [find-sensors 
-                                  get-grouped-sensor-data 
-                                  get-single-sensor-data 
+            [homefront.db :refer [find-sensors
+                                  get-grouped-sensor-data
+                                  get-single-sensor-data
                                   insert-sensor-data-json
                                   save-sensor-json
                                   remove-sensor]]
+            [homefront.database :refer :all]
             monger.json))
 
 
-(add-encoder org.joda.time.DateTime 
+(add-encoder org.joda.time.DateTime
              (fn [dt jsonGenerator] (.writeString jsonGenerator (unparse (formatters :basic-date-time) dt))))
 
 (def time-formatter (formatter "dd.MM.yyyyhh:mm:ss"))
@@ -38,22 +40,22 @@
 
 (defresource sensors
   :allowed-methods [:get]
-  :handle-ok (fn [ctx] 
-               (generate-string (find-sensors)))
+  :handle-ok (fn [ctx]
+               (generate-string (get-sensors)))
   :available-media-types ["application/json"])
 
 (defresource sensor-data
   :allowed-methods [:get]
-  :handle-ok (fn [ctx] 
+  :handle-ok (fn [ctx]
                (let [start-time (get-in ctx [:request :params :start])
                      end-time (get-in ctx [:request :params :end])]
                  (println "get sensors" start-time end-time)
-                 (generate-string (get-grouped-sensor-data (parse-time start-time) (parse-time end-time)))))
+                 (generate-string (get-sensors-with-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
 (defresource single-sensor-data
   :allowed-methods [:get]
-  :handle-ok (fn [ctx] 
+  :handle-ok (fn [ctx]
                (let [mac (get-in ctx [:request :params :mac])
                      start-time (get-in ctx [:request :params :start])
                      end-time (get-in ctx [:request :params :end])]

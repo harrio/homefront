@@ -11,6 +11,7 @@ var paths = {
   css: ['bower_components/nvd3/nv.d3.css', 'bower_components/bootstrap/dist/css/bootstrap.css', 'src/css/*.css'],
   fonts: ['fonts/*'],
   nonBundleJs: ['bower_components/bootstrap/dist/js/bootstrap.min.js',
+  'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
   'bower_components/flot.tooltip/js/jquery.flot.tooltip.js',
   'lib/js/**/*.js'],
   less: ['src/less/homefront.less']
@@ -48,7 +49,7 @@ gulp.task('non-bundle-js', function() {
   gulp.src(paths.nonBundleJs)
     .pipe(gulp.dest('./resources/public/js/'));
 });
- 
+
 var brConfig = {
 	shim: {
     jquery: {
@@ -90,6 +91,10 @@ var brConfig = {
     notifyStyle: {
       path: './bower_components/notify/styles/bootstrap/notify-bootstrap.js',
       exports: 'notifyStyle'
+    },
+    uiBootstrap: {
+      path: 'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+      exports: 'uiBootstrap'
     }
   },
   debug: true
@@ -107,5 +112,5 @@ gulp.task('scripts', browserifier);
 gulp.task('watch', function () {
   gulp.watch(paths.scripts, ['scripts']);
 });
- 
+
 gulp.task('default', ['scripts', 'non-bundle-js', 'templates', 'less', 'minify-css', 'fonts']);

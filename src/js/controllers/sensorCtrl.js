@@ -5,7 +5,7 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
 
   $scope.showSaveFailed = false;
   $scope.showSaveOk = false;
-  
+
   $scope.fetchSensors = function() {
     $scope.showSaveOk = false;
     $scope.showSaveFailed = false;
@@ -28,9 +28,9 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   };
 
   $scope.isSelectedSensor = function(item) {
-    return $scope.anySensorSelected() && $scope.selectedSensor._id === item._id;
+    return $scope.anySensorSelected() && $scope.selectedSensor.sensor_id === item.sensor_id;
   };
-    
+
   $scope.anySensorSelected = function() {
     return $scope.selectedSensor !== undefined;
   };
@@ -38,7 +38,7 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   $scope.deleteSensor = function() {
     var deleted = $scope.selectedSensor;
     $scope.close();
-    $http.delete('/deleteSensor/' + deleted._id).
+    $http.delete('/deleteSensor/' + deleted.sensor_id).
       success(function(data) {
         $scope.fetchSensors();
         $.notify("Sensor deleted", "success");
@@ -79,7 +79,7 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   $scope.isSelectedProbe = function(item) {
     return $scope.selectedProbe === item;
   };
-    
+
   $scope.anyProbeSelected = function() {
     return $scope.selectedProbe !== undefined;
   };
@@ -108,7 +108,7 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
     var newProbe = { name: "", key: "", humidity: false };
     $scope.selectProbe(newProbe);
   };
-    
+
   $scope.close = function() {
     $scope.selectedSensor = undefined;
     $scope.selectedProbe = undefined;
