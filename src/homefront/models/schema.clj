@@ -3,6 +3,11 @@
             [clj-time.core :as time])
   (import org.joda.time.DateTime))
 
+(def Sensor-data-in
+  {:mac s/Str
+   :data [{:key s/Num :temp s/Num (s/optional-key :hum) s/Num (s/optional-key :st) s/Num}]
+   })
+
 (def Probe
   {:probe_id s/Num
    :sensor_id s/Num
@@ -14,8 +19,6 @@
   {:sensor_id s/Num
    :mac s/Str
    :name s/Str})
-
-(s/validate Sensor {:sensor_id 1, :mac "mac", :name "name"})
 
 (def Temperature-in
   {:temp_id s/Num
@@ -45,4 +48,5 @@
 (defn validate-sensors-with-data [data]
   (s/validate Sensors-with-data data))
 
-
+(defn validate-sensor-data-in [data]
+  (s/validate Sensor-data-in data))

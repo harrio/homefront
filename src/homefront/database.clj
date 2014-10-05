@@ -76,6 +76,23 @@
   (sql/select sensor
           (sql/with probe)))
 
+(defn get-probes [mac]
+  (sql/select probe
+              (sql/where {:sensor_id [in (sql/subselect sensor
+                                                        (sql/fields :sensor_id)
+                                                        (sql/where {:mac mac}))]})))
+
+(defn get-probe [mac key]
+  (println mac key)
+  (first (sql/select probe
+              (sql/where {:sensor_id [in (sql/subselect sensor
+                                                        (sql/fields :sensor_id)
+                                                        (sql/where {:mac mac}
+                                                                   ))]
+                          :key key}))))
+
+(get-probe "00:13:12:31:25:81" 1)
+
 (defn time-range
   "Return a lazy sequence of DateTime's from start to end, incremented
   by 'step' units of time."
@@ -126,9 +143,26 @@
 ;  (insert-sensor-data (parse-string json)))
 
 ;(get-sensor-data 2 (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
-(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
+;(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
+
+(defn insert-probe-data [probe data]
+  (sql/insert temperature (sql/values { :probe_id (:probe_id probe) :value (:temp data) :time (time/now)}))
+  (if (:hum data)
+    (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data) :time (time/now)}))))
+
+(defn insert-sensor-data [data-obj]
+  (validate-sensor-data-in data-obj)
+  (doseq [data (:data data-obj)]
+    (let [probe (get-probe (:mac data-obj) (:key data))]
+      (println data probe)
+      (insert-probe-data probe data)
+      )))
 
 
+;(insert-sensor-data {:mac "00:13:12:31:25:81" :data [{:key 1 :temp 2000} {:key 2 :temp 3000 :hum 4000 :st 4}]})
+
+(defn insert-sensor-data-json [json]
+  (insert-sensor-data (parse-string json)))
 
 
 
