@@ -9,16 +9,19 @@
    })
 
 (def Probe
-  {:probe_id s/Num
+  {(s/optional-key :probe_id) s/Num
    :sensor_id s/Num
    :key s/Num
    :name s/Str
    :humidity s/Bool})
 
 (def Sensor
-  {:sensor_id s/Num
+  {(s/optional-key :sensor_id) s/Num
    :mac s/Str
-   :name s/Str})
+   :name s/Str
+   :probe [Probe]})
+
+(def Sensors [Sensor])
 
 (def Temperature-in
   {:temp_id s/Num
@@ -50,3 +53,9 @@
 
 (defn validate-sensor-data-in [data]
   (s/validate Sensor-data-in data))
+
+(defn validate-sensor [sensor]
+  (s/validate Sensor sensor))
+
+(defn validate-sensors [sensors]
+  (s/validate Sensors sensors))

@@ -73,8 +73,10 @@
   (sql/belongs-to probe))
 
 (defn get-sensors []
-  (sql/select sensor
-          (sql/with probe)))
+  (let [sensors (sql/select sensor
+          (sql/with probe))]
+    (validate-sensors sensors)
+    sensors))
 
 (defn get-probes [mac]
   (sql/select probe
@@ -135,12 +137,6 @@
     (validate-sensors-with-data data)
     data))
 
-;(defn insert-sensor-data [data-obj]
-;  (doseq [entry (data-obj "data")]
-;      (mc/insert "sensordata" (merge entry { :addr (data-obj "addr") :time (time/now) }))))
-
-;(defn insert-sensor-data-json [json]
-;  (insert-sensor-data (parse-string json)))
 
 ;(get-sensor-data 2 (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
 ;(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
@@ -164,5 +160,27 @@
 (defn insert-sensor-data-json [json]
   (insert-sensor-data (parse-string json)))
 
+(defn- save-sensor [probe sensor-id]
+  (if (:probe_id probe)
+    (update-probe probe)
+    (insert-probe probe sensor-id)))
 
+(defn- update-sensor [sensor]
+  (sql/update sensor
+              (sql/set-fields {:mac (:mac sensor) :name (:name sensor)})
+              (sql/where {:sensor_id (:sensor_id sensor)}))
+  (doseq [probe (:probe sensor)]
+    (save-probe probe (:sensor_id sensor))))
+
+(defn- insert-sensor [sensor]
+  (let [sensor-id (sql/insert sensor
+              (sql/values {:mac (:mac sensor) :name (:name sensor)}))]
+    (doseq [probe (:probe sensor)]
+      (save-probe probe sensor-id))))
+
+(defn save-sensor [sensor]
+  (validate-sensor sensor)
+  (if (:sensor_id sensor)
+    (update-sensor sensor)
+    (insert-sensor sensor)))
 
