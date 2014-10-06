@@ -7,18 +7,11 @@
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.db :refer [find-sensors
-                                  get-grouped-sensor-data
-                                  get-single-sensor-data
-                                  insert-sensor-data-json
-                                  save-sensor-json
-                                  remove-sensor]]
-            [homefront.database :refer :all]
-            monger.json))
+            [homefront.database :refer :all]))
 
 
 (add-encoder org.joda.time.DateTime
-             (fn [dt jsonGenerator] (.writeString jsonGenerator (unparse (formatters :basic-date-time) dt))))
+             (fn [dt jsonGenerator] (.writeString jsonGenerator (unparse (formatters :date-time-no-ms) dt))))
 
 (def time-formatter (formatter "dd.MM.yyyyhh:mm:ss"))
 
@@ -53,16 +46,6 @@
                  (generate-string (get-sensors-with-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
-(defresource single-sensor-data
-  :allowed-methods [:get]
-  :handle-ok (fn [ctx]
-               (let [mac (get-in ctx [:request :params :mac])
-                     start-time (get-in ctx [:request :params :start])
-                     end-time (get-in ctx [:request :params :end])]
-                 (println "get sensors" mac start-time end-time)
-                 (generate-string (get-single-sensor-data mac (parse-time start-time) (parse-time end-time)))))
-  :available-media-types ["application/json"])
-
 (defresource save-data
   :allowed-methods [:post]
   :post! (fn [ctx]
@@ -88,7 +71,6 @@
   (ANY "/" request home)
   (GET "/sensors" request sensors)
   (GET "/sensorData" request sensor-data)
-  (GET "/singleSensorData" request single-sensor-data)
   (POST "/saveData" request save-data)
   (POST "/saveSensor" request save-sensor)
   (DELETE "/deleteSensor/:sensor" [sensor] (delete-sensor sensor)))

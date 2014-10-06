@@ -8,23 +8,29 @@
             [cheshire.core :refer :all]
             [homefront.routes.home :refer :all]
             [ring.middleware.basic-authentication :refer :all]
-            [ring.middleware.json :refer :all]))
+            [ring.middleware.json :refer :all]
+            [environ.core :refer [env]]))
+
+(def user
+  (env :homefront-user))
+
+(def password
+  (env :homefront-pwd))
+
 (defn read-config []
   (parse-stream (clojure.java.io/reader (clojure.java.io/resource "config.json"))))
 
 (defn init []
   (println "homefront is starting")
-  ;(start-serial (read-config))
   )
 
 (defn destroy []
   (println "homefront is shutting down")
-  ;(stop-serial)
   )
 
 (defn authenticated? [name pass]
-  (and (= name "foo")
-       (= pass "bar")))
+  (and (= name user)
+       (= pass password)))
 
 (defroutes app-routes
   (route/resources "/")

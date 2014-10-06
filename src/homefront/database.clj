@@ -160,7 +160,17 @@
 (defn insert-sensor-data-json [json]
   (insert-sensor-data (parse-string json)))
 
-(defn- save-sensor [probe sensor-id]
+
+(defn- update-probe [probe]
+  (sql/update probe
+              (sql/set-fields {:key (:key probe) :name (:name probe) :humidity (:humidity probe)})
+              (sql/where {:probe_id (:probe_id probe)})))
+
+(defn- insert-probe [probe sensor-id]
+  (sql/insert probe
+              (sql/values {:sensor_id sensor-id :key (:key probe) :name (:name probe) :humidity (:humidity probe)})))
+
+(defn- save-probe [probe sensor-id]
   (if (:probe_id probe)
     (update-probe probe)
     (insert-probe probe sensor-id)))
@@ -178,9 +188,14 @@
     (doseq [probe (:probe sensor)]
       (save-probe probe sensor-id))))
 
-(defn save-sensor [sensor]
+(defn- save-sensor [sensor]
   (validate-sensor sensor)
   (if (:sensor_id sensor)
     (update-sensor sensor)
     (insert-sensor sensor)))
 
+(defn save-sensor-json [json]
+  (save-sensor (parse-string json)))
+
+(defn remove-sensor [sensor]
+  (println "delete " sensor))
