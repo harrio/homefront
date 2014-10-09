@@ -203,10 +203,41 @@
   (println "delete " sensor))
 
 (defn- get-probe-data-last-hour [probe-id]
-  (sql/exec-raw ["select count(*) from temperature
+  (sql/exec-raw ["select * from temperature
              where probe_id = ?
              and extract(hour from time) = extract(hour from now()) - 1
              and time::date = now()::date
-                 and aggregation is null" [probe-id]] :results))
+                 and aggregation is null order by time" [probe-id]] :results))
 
 (get-probe-data-last-hour 1)
+
+(defn mean [coll]
+  (let [sum (apply + coll)
+        count (count coll)]
+    (if (pos? count)
+      (/ sum count)
+      0)))
+
+(defn median [coll]
+  (let [sorted (sort coll)
+        cnt (count sorted)
+        halfway (quot cnt 2)]
+    (if (odd? cnt)
+      (nth sorted halfway) ; (1)
+      (let [bottom (dec halfway)
+            bottom-val (nth sorted bottom)
+            top-val (nth sorted halfway)]
+        (mean [bottom-val top-val])))))
+
+(defn median-value [values]
+  (median (map #(:value %) values)))
+
+(defn- make-aggregated-temp [probe-id]
+  (let [last-hr-values (get-probe-data-last-hour probe-id)]
+    {:probe_id probe-id
+     :value (median-value last-hr-values)
+     :time (time/today-at (time/hour (sql-timestamp->joda-datetime (:time (first last-hr-values)))) 00)
+     :aggregation 1}))
+
+(make-aggregated-temp 1)
+
