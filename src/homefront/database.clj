@@ -108,15 +108,17 @@
 (defn hour-range [start-time end-time]
   (time-range start-time
               end-time
-              (time/hours 1)))
+              (time/minutes 5)))
 
 (defn insert-test-data []
   (doseq [sensor (get-sensors)]
     (println (sensor :key))
     (doseq [probe (sensor :probe)]
       (println "  " (probe :key))
-      (doseq [t (hour-range (time/date-time 2014 05 01 00 00) (time/date-time 2014 05 10 16 00))]
-        (sql/insert temperature (sql/values { :probe_id (probe :probe_id) :value (time/hour t) :time (joda-datetime->sql-timestamp t)}))))))
+      (doseq [t (hour-range (time/date-time 2014 10 8 00 00) (time/date-time 2014 10 12 23 00))]
+        (sql/insert temperature (sql/values { :probe_id (probe :probe_id) :value (+ 18 (* 5 (rand))) :time (joda-datetime->sql-timestamp t)}))))))
+
+(insert-test-data)
 
 (defn get-sensor-data [sensor_id start-time end-time]
   (sql/select temperature
@@ -199,3 +201,12 @@
 
 (defn remove-sensor [sensor]
   (println "delete " sensor))
+
+(defn- get-probe-data-last-hour [probe-id]
+  (sql/exec-raw ["select count(*) from temperature
+             where probe_id = ?
+             and extract(hour from time) = extract(hour from now()) - 1
+             and time::date = now()::date
+                 and aggregation is null" [probe-id]] :results))
+
+(get-probe-data-last-hour 1)
