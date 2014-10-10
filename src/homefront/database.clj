@@ -8,7 +8,8 @@
             [clj-time.coerce :as time-coerce]
             [clj-time.core :as time]
             [clj-time.periodic :as time-period]
-            [homefront.models.schema :refer :all]))
+            [homefront.models.schema :refer :all]
+            [homefront.util :as util]))
 
 (korma.db/defdb pg (korma.db/postgres {:db "homefront"
                    :user "homefront"
@@ -28,7 +29,7 @@
                         time-coerce/from-sql-time
                         m))
 
-(defn ^:private to-local-date-default-tz
+(defn- to-local-date-default-tz
   [date]
   (let [dt (time-coerce/to-date-time date)]
     (time-coerce/to-local-date (time/to-time-zone dt (time/default-time-zone)))))
@@ -110,15 +111,20 @@
               end-time
               (time/minutes 5)))
 
-(defn insert-test-data []
+(defn- insert-temperature [temp]
+  (sql/insert temperature (sql/values temp)))
+
+(defn- insert-test-data []
   (doseq [sensor (get-sensors)]
     (println (sensor :key))
     (doseq [probe (sensor :probe)]
       (println "  " (probe :key))
       (doseq [t (hour-range (time/date-time 2014 10 8 00 00) (time/date-time 2014 10 12 23 00))]
-        (sql/insert temperature (sql/values { :probe_id (probe :probe_id) :value (+ 18 (* 5 (rand))) :time (joda-datetime->sql-timestamp t)}))))))
+        (insert-temperature { :probe_id (probe :probe_id) :value (+ 18 (* 5 (rand))) :time (joda-datetime->sql-timestamp t)})))))
 
-(insert-test-data)
+(defn- delete-temperatures [temp-ids]
+  (sql/delete temperature
+              (sql/where {:temp_id [in temp-ids]})))
 
 (defn get-sensor-data [sensor_id start-time end-time]
   (sql/select temperature
@@ -142,25 +148,6 @@
 
 ;(get-sensor-data 2 (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
 ;(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
-
-(defn insert-probe-data [probe data]
-  (sql/insert temperature (sql/values { :probe_id (:probe_id probe) :value (:temp data) :time (time/now)}))
-  (if (:hum data)
-    (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data) :time (time/now)}))))
-
-(defn insert-sensor-data [data-obj]
-  (validate-sensor-data-in data-obj)
-  (doseq [data (:data data-obj)]
-    (let [probe (get-probe (:mac data-obj) (:key data))]
-      (println data probe)
-      (insert-probe-data probe data)
-      )))
-
-
-;(insert-sensor-data {:mac "00:13:12:31:25:81" :data [{:key 1 :temp 2000} {:key 2 :temp 3000 :hum 4000 :st 4}]})
-
-(defn insert-sensor-data-json [json]
-  (insert-sensor-data (parse-string json)))
 
 
 (defn- update-probe [probe]
@@ -209,35 +196,45 @@
              and time::date = now()::date
                  and aggregation is null order by time" [probe-id]] :results))
 
-(get-probe-data-last-hour 1)
+;(get-probe-data-last-hour 2)
 
-(defn mean [coll]
-  (let [sum (apply + coll)
-        count (count coll)]
-    (if (pos? count)
-      (/ sum count)
-      0)))
-
-(defn median [coll]
-  (let [sorted (sort coll)
-        cnt (count sorted)
-        halfway (quot cnt 2)]
-    (if (odd? cnt)
-      (nth sorted halfway) ; (1)
-      (let [bottom (dec halfway)
-            bottom-val (nth sorted bottom)
-            top-val (nth sorted halfway)]
-        (mean [bottom-val top-val])))))
-
-(defn median-value [values]
-  (median (map #(:value %) values)))
 
 (defn- make-aggregated-temp [probe-id]
   (let [last-hr-values (get-probe-data-last-hour probe-id)]
-    {:probe_id probe-id
-     :value (median-value last-hr-values)
-     :time (time/today-at (time/hour (sql-timestamp->joda-datetime (:time (first last-hr-values)))) 00)
-     :aggregation 1}))
+    (if (seq last-hr-values)
+      {:aggregate {:probe_id probe-id
+         :value (util/median-value last-hr-values)
+         :time (time/today-at (time/hour (sql-timestamp->joda-datetime (:time (first last-hr-values)))) 00)
+         :aggregation 1}
+       :deleted-values (map #(:temp_id %) last-hr-values)}
+      nil)))
 
-(make-aggregated-temp 1)
+;(make-aggregated-temp 2)
 
+(defn- aggregate-temperatures [probe]
+  (let [aggregated-temp (make-aggregated-temp (:probe_id probe))]
+    (when aggregated-temp
+      (insert-temperature (:aggregate aggregated-temp))
+      (delete-temperatures (:deleted-values aggregated-temp)))))
+
+;(aggregate-temperatures 1)
+
+(defn- insert-probe-data [probe data]
+  (sql/insert temperature (sql/values { :probe_id (:probe_id probe) :value (:temp data) :time (time/now)}))
+  (if (:hum data)
+    (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data) :time (time/now)}))))
+
+(defn- insert-sensor-data [data-obj]
+  (validate-sensor-data-in data-obj)
+  (doseq [data (:data data-obj)]
+    (let [probe (get-probe (:mac data-obj) (:key data))]
+      (println data probe)
+      (insert-probe-data probe data)
+      (aggregate-temperatures probe)
+      )))
+
+
+;(insert-sensor-data {:mac "00:13:12:31:25:81" :data [{:key 1 :temp 2000} {:key 2 :temp 3000 :hum 4000 :st 4}]})
+
+(defn insert-sensor-data-json [json]
+  (insert-sensor-data (parse-string json)))
