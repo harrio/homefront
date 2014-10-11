@@ -16,12 +16,12 @@ CREATE TABLE temperature (
   temp_id serial PRIMARY KEY,
   probe_id integer REFERENCES probe(probe_id) NOT NULL,
   value real NOT NULL,
-  time timestamp NOT NULL
+  time timestamp WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE humidity (
   hum_id serial PRIMARY KEY,
   probe_id integer REFERENCES probe(probe_id) NOT NULL,
   value real NOT NULL,
-  time timestamp NOT NULL
+  time timestamp WITH TIME ZONE NOT NULL DEFAULT NOW()
 );

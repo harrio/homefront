@@ -17,7 +17,8 @@
                  [org.postgresql/postgresql "9.2-1002-jdbc4"]
                  [prismatic/schema "0.3.0" :exclusions [org.clojure/tools.reader]]
                  [org.clojure/tools.reader "0.8.8"]
-                 [environ "1.0.0"]]
+                 [environ "1.0.0"]
+                 [silasdavis/at-at "1.2.0"]]
   :dev-dependencies [[lein-eclipse "1.0.0"]]
   :plugins [[lein-ring "0.8.7"] [no-man-is-an-island/lein-eclipse "2.0.0"]]
   :ring {:handler homefront.handler/app

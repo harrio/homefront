@@ -7,9 +7,9 @@
             [cheshire.core :refer [generate-string parse-string ]]
             [clj-time.coerce :as time-coerce]
             [clj-time.core :as time]
-            [clj-time.periodic :as time-period]
             [homefront.models.schema :refer :all]
-            [homefront.util :as util]))
+            [homefront.util :as util]
+            [overtone.at-at :as at]))
 
 (korma.db/defdb pg (korma.db/postgres {:db "homefront"
                    :user "homefront"
@@ -94,37 +94,29 @@
                                                                    ))]
                           :key key}))))
 
-(get-probe "00:13:12:31:25:81" 1)
-
-(defn time-range
-  "Return a lazy sequence of DateTime's from start to end, incremented
-  by 'step' units of time."
-  [start end step]
-  (let [inf-range (time-period/periodic-seq start step)
-        below-end? (fn [t] (time/within? (time/interval start end)
-                                         t))]
-    (take-while below-end? inf-range)))
-
-
-(defn hour-range [start-time end-time]
-  (time-range start-time
-              end-time
-              (time/minutes 5)))
+;(get-probe "00:13:12:31:25:81" 1)
 
 (defn- insert-temperature [temp]
   (sql/insert temperature (sql/values temp)))
+
+(defn- insert-humidity [hum]
+  (sql/insert humidity (sql/values hum)))
 
 (defn- insert-test-data []
   (doseq [sensor (get-sensors)]
     (println (sensor :key))
     (doseq [probe (sensor :probe)]
       (println "  " (probe :key))
-      (doseq [t (hour-range (time/date-time 2014 10 8 00 00) (time/date-time 2014 10 12 23 00))]
+      (doseq [t (util/hour-range (time/date-time 2014 10 8 00 00) (time/date-time 2014 10 12 23 00))]
         (insert-temperature { :probe_id (probe :probe_id) :value (+ 18 (* 5 (rand))) :time (joda-datetime->sql-timestamp t)})))))
 
 (defn- delete-temperatures [temp-ids]
   (sql/delete temperature
               (sql/where {:temp_id [in temp-ids]})))
+
+(defn- delete-humidities [hum-ids]
+  (sql/delete humidity
+              (sql/where {:hum_id [in hum-ids]})))
 
 (defn get-sensor-data [sensor_id start-time end-time]
   (sql/select temperature
@@ -146,7 +138,7 @@
     data))
 
 
-;(get-sensor-data 2 (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
+;(get-sensor-data 1 (time/date-time 2014 10 10 01 00) (time/date-time 2014 10 11 11 00))
 ;(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
 
 
@@ -189,8 +181,15 @@
 (defn remove-sensor [sensor]
   (println "delete " sensor))
 
-(defn- get-probe-data-last-hour [probe-id]
+(defn- get-temp-data-last-hour [probe-id]
   (sql/exec-raw ["select * from temperature
+             where probe_id = ?
+             and extract(hour from time) = extract(hour from now()) - 1
+             and time::date = now()::date
+                 and aggregation is null order by time" [probe-id]] :results))
+
+(defn- get-hum-data-last-hour [probe-id]
+  (sql/exec-raw ["select * from humidity
              where probe_id = ?
              and extract(hour from time) = extract(hour from now()) - 1
              and time::date = now()::date
@@ -199,8 +198,8 @@
 ;(get-probe-data-last-hour 2)
 
 
-(defn- make-aggregated-temp [probe-id]
-  (let [last-hr-values (get-probe-data-last-hour probe-id)]
+(defn- make-aggregated-value [probe-id last-hour-getter]
+  (let [last-hr-values (last-hour-getter probe-id)]
     (if (seq last-hr-values)
       {:aggregate {:probe_id probe-id
          :value (util/median-value last-hr-values)
@@ -209,20 +208,28 @@
        :deleted-values (map #(:temp_id %) last-hr-values)}
       nil)))
 
-;(make-aggregated-temp 2)
+;(make-aggregated-value 2)
 
 (defn- aggregate-temperatures [probe]
-  (let [aggregated-temp (make-aggregated-temp (:probe_id probe))]
+  (let [aggregated-temp (make-aggregated-value (:probe_id probe) get-temp-data-last-hour)]
     (when aggregated-temp
       (insert-temperature (:aggregate aggregated-temp))
       (delete-temperatures (:deleted-values aggregated-temp)))))
 
+(defn- aggregate-humidities [probe]
+  (let [aggregated-hum (make-aggregated-value (:probe_id probe) get-hum-data-last-hour)]
+    (when aggregated-hum
+      (insert-humidity (:aggregate aggregated-hum))
+      (delete-humidities (:deleted-values aggregated-hum)))))
+
 ;(aggregate-temperatures 1)
 
 (defn- insert-probe-data [probe data]
-  (sql/insert temperature (sql/values { :probe_id (:probe_id probe) :value (:temp data) :time (time/now)}))
+  (sql/insert temperature (sql/values { :probe_id (:probe_id probe) :value (:temp data)}))
+  (aggregate-temperatures probe)
   (if (:hum data)
-    (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data) :time (time/now)}))))
+    (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data)}))
+    (aggregate-humidities probe)))
 
 (defn- insert-sensor-data [data-obj]
   (validate-sensor-data-in data-obj)
@@ -230,7 +237,6 @@
     (let [probe (get-probe (:mac data-obj) (:key data))]
       (println data probe)
       (insert-probe-data probe data)
-      (aggregate-temperatures probe)
       )))
 
 
@@ -238,3 +244,11 @@
 
 (defn insert-sensor-data-json [json]
   (insert-sensor-data (parse-string json)))
+
+(def my-pool (at/mk-pool))
+
+(at/every 60000 #(insert-probe-data {:probe_id 1} {:temp (+ 18 (* 5 (rand))) :hum (+ 50 (* 10 (rand)))}) my-pool)
+
+;(insert-probe-data {:probe_id 1} {:temp (+ 18 (* 5 (rand))) })
+
+;(at/stop-and-reset-pool! my-pool)
