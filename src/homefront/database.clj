@@ -138,7 +138,7 @@
     data))
 
 
-;(get-sensor-data 1 (time/date-time 2014 10 10 01 00) (time/date-time 2014 10 11 11 00))
+(get-sensor-data 1 (time/date-time 2014 10 11 20 00) (time/date-time 2014 10 11 21 00))
 ;(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
 
 
@@ -182,42 +182,45 @@
   (println "delete " sensor))
 
 (defn- get-temp-data-last-hour [probe-id]
-  (sql/exec-raw ["select * from temperature
-             where probe_id = ?
-             and extract(hour from time) = extract(hour from now()) - 1
-             and time::date = now()::date
+  (sql/exec-raw ["select * from temperature where probe_id = ?
+                 and (extract(hour from time) = extract(hour from now()) - 1
+                 and time::date = now()::date
+                 or extract(hour from time) = 23
+                 and time::date = now()::date - 1)
                  and aggregation is null order by time" [probe-id]] :results))
 
 (defn- get-hum-data-last-hour [probe-id]
-  (sql/exec-raw ["select * from humidity
-             where probe_id = ?
-             and extract(hour from time) = extract(hour from now()) - 1
-             and time::date = now()::date
+  (sql/exec-raw ["select * from humidity where probe_id = ?
+                 and (extract(hour from time) = extract(hour from now()) - 1
+                 and time::date = now()::date
+                 or extract(hour from time) = 23
+                 and time::date = now()::date - 1)
                  and aggregation is null order by time" [probe-id]] :results))
 
-;(get-probe-data-last-hour 2)
+;(get-hum-data-last-hour 1)
 
 
-(defn- make-aggregated-value [probe-id last-hour-getter]
+(defn- make-aggregated-value [probe-id last-hour-getter id-column]
   (let [last-hr-values (last-hour-getter probe-id)]
     (if (seq last-hr-values)
       {:aggregate {:probe_id probe-id
          :value (util/median-value last-hr-values)
          :time (time/today-at (time/hour (sql-timestamp->joda-datetime (:time (first last-hr-values)))) 00)
          :aggregation 1}
-       :deleted-values (map #(:temp_id %) last-hr-values)}
+       :deleted-values (map #(id-column %) last-hr-values)}
       nil)))
 
 ;(make-aggregated-value 2)
+;(make-aggregated-value 1 get-hum-data-last-hour :hum_id)
 
 (defn- aggregate-temperatures [probe]
-  (let [aggregated-temp (make-aggregated-value (:probe_id probe) get-temp-data-last-hour)]
+  (let [aggregated-temp (make-aggregated-value (:probe_id probe) get-temp-data-last-hour :temp_id)]
     (when aggregated-temp
       (insert-temperature (:aggregate aggregated-temp))
       (delete-temperatures (:deleted-values aggregated-temp)))))
 
 (defn- aggregate-humidities [probe]
-  (let [aggregated-hum (make-aggregated-value (:probe_id probe) get-hum-data-last-hour)]
+  (let [aggregated-hum (make-aggregated-value (:probe_id probe) get-hum-data-last-hour :hum_id)]
     (when aggregated-hum
       (insert-humidity (:aggregate aggregated-hum))
       (delete-humidities (:deleted-values aggregated-hum)))))
@@ -227,7 +230,7 @@
 (defn- insert-probe-data [probe data]
   (sql/insert temperature (sql/values { :probe_id (:probe_id probe) :value (:temp data)}))
   (aggregate-temperatures probe)
-  (if (:hum data)
+  (when (:hum data)
     (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data)}))
     (aggregate-humidities probe)))
 
@@ -247,7 +250,7 @@
 
 (def my-pool (at/mk-pool))
 
-(at/every 60000 #(insert-probe-data {:probe_id 1} {:temp (+ 18 (* 5 (rand))) :hum (+ 50 (* 10 (rand)))}) my-pool)
+;(at/every 60000 #(insert-probe-data {:probe_id 1} {:temp (+ 18 (* 5 (rand))) :hum (+ 50 (* 10 (rand)))}) my-pool)
 
 ;(insert-probe-data {:probe_id 1} {:temp (+ 18 (* 5 (rand))) })
 
