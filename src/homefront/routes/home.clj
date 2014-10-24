@@ -50,7 +50,7 @@
   :allowed-methods [:post]
   :post! (fn [ctx]
            (let [body (get-in ctx [:request :body])]
-             (insert-sensor-data-json body)))
+             (insert-sensor-data body)))
   :handle-ok "ok"
   :available-media-types ["application/json"])
 
@@ -58,7 +58,7 @@
   :allowed-methods [:post]
   :post! (fn [ctx]
            (let [body (get-in ctx [:request :body])]
-             (save-sensor-json body)))
+             (save-sensor-db body)))
   :handle-ok "ok"
   :available-media-types ["application/json"])
 

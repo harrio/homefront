@@ -5,13 +5,13 @@
 
 (def Sensor-data-in
   {:mac s/Str
-   :data [{:key s/Num :temp s/Num (s/optional-key :hum) s/Num (s/optional-key :st) s/Num}]
+   :data [{:key s/Str :temp s/Num (s/optional-key :hum) s/Num (s/optional-key :st) s/Num}]
    })
 
 (def Probe
   {(s/optional-key :probe_id) s/Num
-   :sensor_id s/Num
-   :key s/Num
+   (s/optional-key :sensor_id) s/Num
+   :key s/Str
    :name s/Str
    :humidity s/Bool})
 
@@ -19,6 +19,8 @@
   {(s/optional-key :sensor_id) s/Num
    :mac s/Str
    :name s/Str
+   (s/optional-key :key) s/Str
+   (s/optional-key :active) s/Bool
    :probe [Probe]})
 
 (def Sensors [Sensor])

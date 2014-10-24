@@ -41,6 +41,6 @@
       (handler/site)
       (wrap-base-url)
       (wrap-basic-authentication authenticated?)
-      (wrap-json-body)))
+      (wrap-json-body {:keywords? true})))
 
 

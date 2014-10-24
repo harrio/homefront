@@ -1,7 +1,7 @@
 var angular = require('angular');
 var _ = require('lodash');
 
-var format = d3.time.format("%Y-%m-%dT%H:%M:%SZ");
+var format = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
 var parseDate = format.parse;
 
 var makeData = function(dataArrays) {
@@ -63,7 +63,7 @@ exports.chartCtrl = function($scope, $http, $interval) {
             },
             tooltip: true,
             tooltipOpts: {
-              content: "%s %x: %y",
+              content: "%s %x: %y.2",
               shifts: {
                 x: -60,
                 y: 25

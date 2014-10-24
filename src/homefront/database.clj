@@ -2,7 +2,7 @@
   (:import java.sql.Date
            org.joda.time.LocalDate)
   (:require [clojure.string :as str]
-            korma.db
+            [korma.db :as db]
             [korma.core :as sql]
             [cheshire.core :refer [generate-string parse-string ]]
             [clj-time.coerce :as time-coerce]
@@ -11,10 +11,11 @@
             [homefront.util :as util]
             [overtone.at-at :as at]))
 
-(korma.db/defdb pg (korma.db/postgres {:db "homefront"
+(db/defdb pg (korma.db/postgres {:db "homefront"
                    :user "homefront"
+                   :password "homefront"
                    :host "localhost"
-                   :port 5432 }))
+                   :port 5433 }))
 
 (defn convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
@@ -133,50 +134,54 @@
                 (sql/fields :probe_id :name)
                 (sql/with temperature
                       (sql/fields :time :value)
-                      (sql/where {:time [between [(joda-datetime->sql-timestamp start-time) (joda-datetime->sql-timestamp end-time)]]}))))]
+                      (sql/where {:time [between [(joda-datetime->sql-timestamp start-time) (joda-datetime->sql-timestamp end-time)]]})
+                      (sql/order :time :ASC))))]
     (validate-sensors-with-data data)
     data))
 
 
-(get-sensor-data 1 (time/date-time 2014 10 11 20 00) (time/date-time 2014 10 11 21 00))
-;(get-sensors-with-data (time/date-time 2014 05 01 01 00) (time/date-time 2014 05 01 02 00))
+;(get-sensor-data 1 (time/date-time 2014 10 11 20 00) (time/date-time 2014 10 11 21 00))
+;(get-sensors-with-data (time/date-time 2014 10 22 01 00) (time/date-time 2014 10 24 02 00))
 
 
-(defn- update-probe [probe]
+(defn- update-probe [probe-data]
   (sql/update probe
-              (sql/set-fields {:key (:key probe) :name (:name probe) :humidity (:humidity probe)})
-              (sql/where {:probe_id (:probe_id probe)})))
+              (sql/set-fields {:key (:key probe-data) :name (:name probe-data) :humidity (:humidity probe-data)})
+              (sql/where {:probe_id (:probe_id probe-data)})))
 
-(defn- insert-probe [probe sensor-id]
+(defn- insert-probe [probe-data sensor-id]
   (sql/insert probe
-              (sql/values {:sensor_id sensor-id :key (:key probe) :name (:name probe) :humidity (:humidity probe)})))
+              (sql/values {:sensor_id sensor-id :key (:key probe-data) :name (:name probe-data) :humidity (:humidity probe-data)})))
 
-(defn- save-probe [probe sensor-id]
-  (if (:probe_id probe)
-    (update-probe probe)
-    (insert-probe probe sensor-id)))
+(defn- save-probe [probe-data sensor-id]
+  (if (:probe_id probe-data)
+    (update-probe probe-data)
+    (insert-probe probe-data sensor-id)))
 
-(defn- update-sensor [sensor]
+(defn- update-sensor [sensor-data]
   (sql/update sensor
-              (sql/set-fields {:mac (:mac sensor) :name (:name sensor)})
-              (sql/where {:sensor_id (:sensor_id sensor)}))
-  (doseq [probe (:probe sensor)]
-    (save-probe probe (:sensor_id sensor))))
+              (sql/set-fields {:mac (:mac sensor-data) :name (:name sensor-data)})
+              (sql/where {:sensor_id (:sensor_id sensor-data)}))
+  (doseq [probe (:probe sensor-data)]
+    (save-probe probe (:sensor_id sensor-data))))
 
-(defn- insert-sensor [sensor]
-  (let [sensor-id (sql/insert sensor
-              (sql/values {:mac (:mac sensor) :name (:name sensor)}))]
-    (doseq [probe (:probe sensor)]
+(defn- insert-sensor [sensor-data]
+  (let [sensor-id (:sensor_id (sql/insert sensor
+              (sql/values {:mac (:mac sensor-data) :name (:name sensor-data)})))]
+    (doseq [probe (:probe sensor-data)]
       (save-probe probe sensor-id))))
 
-(defn- save-sensor [sensor]
+(defn save-sensor-db [sensor]
   (validate-sensor sensor)
-  (if (:sensor_id sensor)
-    (update-sensor sensor)
-    (insert-sensor sensor)))
+  (db/transaction
+    (if (:sensor_id sensor)
+      (update-sensor sensor)
+      (insert-sensor sensor))))
+
+;(save-sensor-db {:sensor_id 11 :mac "mac" :name "sname" :probe [{:key "key3" :name "pname3" :humidity false }]})
 
 (defn save-sensor-json [json]
-  (save-sensor (parse-string json)))
+  (save-sensor-db (parse-string json)))
 
 (defn remove-sensor [sensor]
   (println "delete " sensor))
@@ -234,7 +239,7 @@
     (sql/insert humidity (sql/values { :probe_id (:probe_id probe) :value (:hum data)}))
     (aggregate-humidities probe)))
 
-(defn- insert-sensor-data [data-obj]
+(defn insert-sensor-data [data-obj]
   (validate-sensor-data-in data-obj)
   (doseq [data (:data data-obj)]
     (let [probe (get-probe (:mac data-obj) (:key data))]
@@ -248,7 +253,7 @@
 (defn insert-sensor-data-json [json]
   (insert-sensor-data (parse-string json)))
 
-(def my-pool (at/mk-pool))
+;(def my-pool (at/mk-pool))
 
 ;(at/every 60000 #(insert-probe-data {:probe_id 1} {:temp (+ 18 (* 5 (rand))) :hum (+ 50 (* 10 (rand)))}) my-pool)
 
