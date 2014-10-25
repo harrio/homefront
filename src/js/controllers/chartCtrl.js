@@ -38,6 +38,24 @@ var makeFlot = function(dataArrays) {
   return data;
 };
 
+var makeStartTime = function() {
+  var time = new Date();
+  time.setHours(0);
+  time.setMinutes(0);
+  time.setSeconds(0);
+  time.setMilliseconds(0);
+  return time;
+}
+
+var makeEndTime = function() {
+  var time = new Date();
+  time.setHours(23);
+  time.setMinutes(59);
+  time.setSeconds(59);
+  time.setMilliseconds(0);
+  return time;
+}
+
 exports.chartCtrl = function($scope, $http, $interval) {
   var stop;
 
@@ -83,8 +101,8 @@ exports.chartCtrl = function($scope, $http, $interval) {
             }
           };
 
-  $scope.startTime = new Date();
-  $scope.endTime = new Date();
+  $scope.startTime = makeStartTime();
+  $scope.endTime = makeEndTime();
   $scope.format = 'dd.MM.yyyy';
   $scope.dateOptions = {
     formatYear: 'yy',
