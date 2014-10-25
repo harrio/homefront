@@ -8,8 +8,7 @@
             [clj-time.coerce :as time-coerce]
             [clj-time.core :as time]
             [homefront.models.schema :refer :all]
-            [homefront.util :as util]
-            [overtone.at-at :as at]))
+            [homefront.util :as util]))
 
 (db/defdb pg (korma.db/postgres {:db "homefront"
                    :user "homefront"
@@ -205,15 +204,21 @@
 ;(get-hum-data-last-hour 1)
 
 
-(defn- make-aggregated-value [probe-id last-hour-getter id-column]
+(defn make-aggregated-value [probe-id last-hour-getter id-column]
   (let [last-hr-values (last-hour-getter probe-id)]
     (if (seq last-hr-values)
-      {:aggregate {:probe_id probe-id
-         :value (util/median-value last-hr-values)
-         :time (time/today-at (time/hour (sql-timestamp->joda-datetime (:time (first last-hr-values)))) 00)
-         :aggregation 1}
-       :deleted-values (map #(id-column %) last-hr-values)}
-      nil)))
+      (let [base-time (sql-timestamp->joda-datetime (:time (first last-hr-values)))]
+        {:aggregate {:probe_id probe-id
+           :value (util/median-value last-hr-values)
+           :time (time/date-time
+                  (time/year base-time)
+                  (time/month base-time)
+                  (time/day base-time)
+                  (time/hour base-time)
+                  00 00)
+           :aggregation 1}
+         :deleted-values (map #(id-column %) last-hr-values)})
+        nil)))
 
 ;(make-aggregated-value 2)
 ;(make-aggregated-value 1 get-hum-data-last-hour :hum_id)
