@@ -24,8 +24,8 @@ section.content
                       button.btn.btn-default(type="button", ng-click="openEnd($event)")
                         i.glyphicon.glyphicon-calendar
         div.box-footer
-          button.btn.btn-primary.margin(type="submit", ng-click="fetchSensors()") Update
+          button.btn.btn-primary.margin(type="submit", ng-click="fetchGroups()") Update
 
-  div(ng-repeat="sensor in sensors")
-    {{ sensor.name }}
-    flot(dataset="sensor.data", options="flotOptions", width="90%", height="300px")
+  div(ng-repeat="group in groups")
+    {{ group.name }}
+    flot(dataset="group.data", options="flotOptions", width="90%", height="300px")

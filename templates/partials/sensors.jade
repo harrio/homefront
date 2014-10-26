@@ -53,11 +53,13 @@ section.content
                       tr
                         th Name
                         th Key
+                        th Group
                         th Humidity
                     tbody
                       tr(ng-repeat="probe in selectedSensor.probe", ng-click="selectProbe(probe, $index)", ng-class="{selected: $index === selectedProbeIndex}")
                         td {{ probe.name }}
                         td {{ probe.key }}
+                        td {{ groupName(probe.group_id) }}
                         td
                           i.fa.fa-check(ng-if="probe.humidity")
                 div.box-footer
@@ -70,9 +72,12 @@ section.content
                         div.form-group
                           label(for="name") Name
                           input.form-control(type="text", id="name", ng-model="selectedProbe.name")
-                        div(class="form-group")
+                        div.form-group
                           label(for="key") Key
                           input.form-control(type="text", id="key", ng-model="selectedProbe.key")
+                        div.form-group
+                          label(for="group") Probe group
+                          select.form-control(id="group", ng-model="selectedProbe.group_id" ng-options="group.group_id as group.name for group in groups" required)
                         div.form-group
                           label(for="humidity") Humidity
                           input.form-control(type="checkbox", id="humidity", ng-model="selectedProbe.humidity")

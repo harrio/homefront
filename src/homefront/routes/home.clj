@@ -37,6 +37,12 @@
                (generate-string (get-sensors)))
   :available-media-types ["application/json"])
 
+(defresource groups
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx]
+               (generate-string (get-groups)))
+  :available-media-types ["application/json"])
+
 (defresource sensor-data
   :allowed-methods [:get]
   :handle-ok (fn [ctx]
@@ -44,6 +50,15 @@
                      end-time (get-in ctx [:request :params :end])]
                  (println "get sensors" start-time end-time)
                  (generate-string (get-sensors-with-data (parse-time start-time) (parse-time end-time)))))
+  :available-media-types ["application/json"])
+
+(defresource group-data
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx]
+               (let [start-time (get-in ctx [:request :params :start])
+                     end-time (get-in ctx [:request :params :end])]
+                 (println "get sensors" start-time end-time)
+                 (generate-string (get-groups-with-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
 (defresource save-data
@@ -67,11 +82,28 @@
   :delete! (remove-sensor sensor)
   :handle-ok "ok")
 
+(defresource save-group
+  :allowed-methods [:post]
+  :post! (fn [ctx]
+           (let [body (get-in ctx [:request :body])]
+             (save-group-db body)))
+  :handle-ok "ok"
+  :available-media-types ["application/json"])
+
+(defresource delete-group [group]
+  :allowed-methods [:delete]
+  :delete! (remove-group group)
+  :handle-ok "ok")
+
 (defroutes home-routes
   (ANY "/" request home)
   (GET "/sensors" request sensors)
+  (GET "/groups" request groups)
   (GET "/sensorData" request sensor-data)
+  (GET "/groupData" request group-data)
   (POST "/saveData" request save-data)
   (POST "/saveSensor" request save-sensor)
-  (DELETE "/deleteSensor/:sensor" [sensor] (delete-sensor sensor)))
+  (DELETE "/deleteSensor/:sensor" [sensor] (delete-sensor sensor))
+  (POST "/saveGroup" request save-group)
+  (DELETE "/deleteGroup/:group" [group] (delete-group group)))
 

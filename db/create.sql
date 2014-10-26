@@ -7,6 +7,7 @@ CREATE TABLE sensor (
 CREATE TABLE probe (
   probe_id serial PRIMARY KEY,
   sensor_id integer REFERENCES sensor(sensor_id) NOT NULL,
+  group_id integer REFERENCES probegroup(group_id) NOT NULL,
   key varchar(5) NOT NULL,
   name varchar(100) NOT NULL,
   humidity boolean NOT NULL
@@ -26,4 +27,10 @@ CREATE TABLE humidity (
   value numeric(5, 2) NOT NULL,
   time timestamp WITH TIME ZONE NOT NULL DEFAULT NOW(),
   aggregation smallint
+);
+
+CREATE TABLE probegroup (
+  group_id serial PRIMARY KEY,
+  name varchar(100) NOT NULL,
+  index integer NOT NULL
 );

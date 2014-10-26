@@ -1,5 +1,6 @@
 (ns homefront.models.schema
   (:require [schema.core :as s]
+            [schema.coerce :as c]
             [clj-time.core :as time])
   (import org.joda.time.DateTime))
 
@@ -11,6 +12,7 @@
 (def Probe
   {(s/optional-key :probe_id) s/Num
    (s/optional-key :sensor_id) s/Num
+   (s/optional-key :group_id) s/Num
    :key s/Str
    :name s/Str
    :humidity s/Bool})
@@ -24,6 +26,13 @@
    :probe [Probe]})
 
 (def Sensors [Sensor])
+
+(def Probe-group
+  {(s/optional-key :group_id) s/Num
+   :name s/Str
+   :index s/Num})
+
+(def Probe-groups [Probe-group])
 
 (def Temperature-in
   {:temp_id s/Num
@@ -61,3 +70,9 @@
 
 (defn validate-sensors [sensors]
   (s/validate Sensors sensors))
+
+(defn validate-group [group]
+  (s/validate Probe-group group))
+
+(defn validate-groups [groups]
+  (s/validate Probe-groups groups))

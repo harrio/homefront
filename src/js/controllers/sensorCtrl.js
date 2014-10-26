@@ -6,6 +6,19 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
   $scope.showSaveFailed = false;
   $scope.showSaveOk = false;
   $scope.sensors = [];
+  $scope.groups = [];
+
+  $scope.fetchGroups = function() {
+    $scope.showSaveOk = false;
+    $scope.showSaveFailed = false;
+    $http({ method: 'GET', url: '/groups' }).
+        success(function(data, status, headers, config) {
+          $scope.groups = data;
+      }).
+      error(function(data, status, headers, config) {
+        console.log("groups failed: " + status);
+      });
+  };
 
   $scope.fetchSensors = function() {
     $scope.showSaveOk = false;
@@ -95,6 +108,7 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
     probe.key = $scope.selectedProbe.key;
     probe.humidity = $scope.selectedProbe.humidity;
     probe.sensor_id = $scope.selectedProbe.sensor_id;
+    probe.group_id = $scope.selectedProbe.group_id;
   };
 
   $scope.deleteProbe = function() {
@@ -116,5 +130,16 @@ exports.sensorCtrl = function($scope, $http, $location, $interval) {
     $scope.selectedProbe = undefined;
   };
 
+  $scope.groupName = function(group_id) {
+    var group = _.find($scope.groups, { 'group_id': group_id });
+    if (group) {
+      return group.name;
+    } else {
+      return "";
+    }
+  }
+
+
+  $scope.fetchGroups();
   $scope.fetchSensors();
 };

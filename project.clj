@@ -15,7 +15,7 @@
                  [ring/ring-json "0.3.0"]
                  [korma "0.3.0"]
                  [org.postgresql/postgresql "9.2-1002-jdbc4"]
-                 [prismatic/schema "0.3.0" :exclusions [org.clojure/tools.reader]]
+                 [prismatic/schema "0.3.1" :exclusions [org.clojure/tools.reader]]
                  [org.clojure/tools.reader "0.8.8"]
                  [environ "1.0.0"]
                  [silasdavis/at-at "1.2.0"]]

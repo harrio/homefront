@@ -29,6 +29,10 @@ var makeSensors = function(data) {
   return _.map(data, makeSensor);
 }
 
+var makeGroups = function(data) {
+  return _.map(data, makeSensor);
+}
+
 var makeFlot = function(dataArrays) {
   var data = [];
   for (var key in dataArrays) {
@@ -98,6 +102,11 @@ exports.chartCtrl = function($scope, $http, $interval) {
               mode: "time",
               timeformat: "%d.%m.%Y %H:%M",
               timezone: "browser"
+            },
+            legend: {
+              show: true,
+              noColumns: 3,
+              position: "ne",
             }
           };
 
@@ -181,5 +190,17 @@ exports.chartCtrl = function($scope, $http, $interval) {
       });
   };
 
-  $scope.fetchSensors();
+  $scope.fetchGroups = function() {
+    $http({method: 'GET', url: '/groupData', params: { start: format($scope.startTime), end: format($scope.endTime) }}).
+        success(function(data, status, headers, config) {
+
+          $scope.groups = makeGroups(data);
+
+      }).
+      error(function(data, status, headers, config) {
+        console.log("temps failed: " + status);
+      });
+  };
+
+  $scope.fetchGroups();
 };

@@ -54,7 +54,7 @@
      (sql/transform sql-timestamp->joda-datetime)
      ~@body))
 
-(declare sensor probe temperature humidity)
+(declare sensor probe probe-in-group probegroup temperature humidity)
 
 (defentity sensor
   (sql/pk :sensor_id)
@@ -62,8 +62,13 @@
 
 (defentity probe
   (sql/pk :probe_id)
+  (sql/belongs-to probegroup {:fk :group_id})
   (sql/belongs-to sensor)
   (sql/has-many temperature))
+
+(defentity probegroup
+  (sql/pk :group_id)
+  (sql/has-many probe {:fk :group_id}))
 
 (defentity temperature
   (sql/pk :temp_id)
@@ -93,6 +98,11 @@
                                                         (sql/where {:mac mac}
                                                                    ))]
                           :key key}))))
+
+(defn get-groups []
+  (let [groups (sql/select probegroup)]
+    (validate-groups groups)
+    groups))
 
 ;(get-probe "00:13:12:31:25:81" 1)
 
@@ -139,18 +149,32 @@
     data))
 
 
+(defn get-groups-with-data [start-time end-time]
+  (let [data (sql/select probegroup
+                         (sql/fields :group_id :name)
+                         (sql/with probe
+                           (sql/fields :probe_id :name)
+                           (sql/with temperature
+                             (sql/fields :time :value)
+                             (sql/where {:time [between [(joda-datetime->sql-timestamp start-time) (joda-datetime->sql-timestamp end-time)]]})
+                             (sql/order :time :ASC)))
+                         (sql/order :index :ASC))]
+    data))
+
 ;(get-sensor-data 1 (time/date-time 2014 10 11 20 00) (time/date-time 2014 10 11 21 00))
 ;(get-sensors-with-data (time/date-time 2014 10 22 01 00) (time/date-time 2014 10 24 02 00))
+;(get-groups-with-data (time/date-time 2014 10 15 01 00) (time/date-time 2014 10 16 02 00))
+
 
 
 (defn- update-probe [probe-data]
   (sql/update probe
-              (sql/set-fields {:key (:key probe-data) :name (:name probe-data) :humidity (:humidity probe-data)})
+              (sql/set-fields {:key (:key probe-data) :name (:name probe-data) :humidity (:humidity probe-data) :group_id (:group_id probe-data)})
               (sql/where {:probe_id (:probe_id probe-data)})))
 
 (defn- insert-probe [probe-data sensor-id]
   (sql/insert probe
-              (sql/values {:sensor_id sensor-id :key (:key probe-data) :name (:name probe-data) :humidity (:humidity probe-data)})))
+              (sql/values {:sensor_id sensor-id :key (:key probe-data) :name (:name probe-data) :humidity (:humidity probe-data) :group_id (:group_id probe-data)})))
 
 (defn- save-probe [probe-data sensor-id]
   (if (:probe_id probe-data)
@@ -177,6 +201,30 @@
       (update-sensor sensor)
       (insert-sensor sensor))))
 
+
+(defn- update-group [group-data]
+  (sql/update probegroup
+              (sql/set-fields {:name (:name group-data) :index (:index group-data)})
+              (sql/where {:group_id (:group_id group-data)})))
+
+(defn- insert-group [group-data]
+  (sql/insert probegroup
+              (sql/values {:name (:name group-data) :index (:index group-data)})))
+
+(defn- transform-group [group]
+  (if (= java.lang.String (type (:index group)))
+    (assoc group :index (Integer/parseInt (:index group)))
+    group))
+
+
+(defn save-group-db [group]
+  (let [int-index-group (transform-group group)]
+    (validate-group int-index-group)
+    (db/transaction
+      (if (:group_id int-index-group)
+        (update-group int-index-group)
+        (insert-group int-index-group)))))
+
 ;(save-sensor-db {:sensor_id 11 :mac "mac" :name "sname" :probe [{:key "key3" :name "pname3" :humidity false }]})
 
 (defn save-sensor-json [json]
@@ -184,6 +232,9 @@
 
 (defn remove-sensor [sensor]
   (println "delete " sensor))
+
+(defn remove-group [group]
+  (println "delete " group))
 
 (defn- get-temp-data-last-hour [probe-id]
   (sql/exec-raw ["select * from temperature where probe_id = ?
