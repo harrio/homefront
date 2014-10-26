@@ -1,0 +1,43 @@
+section.content-header
+  h1
+    | Administration
+    small Probe groups
+section.content
+  div.row
+    div.col-xs-12
+      div.box
+        div.box-header
+          h3.box-title Groups
+        div.box-body.table-responsive
+          table.table.table-bordered.table-hover(id="grouptable")
+            thead
+              tr
+                th Name
+                th Index
+            tbody
+              tr(ng-repeat="group in groups", ng-click="selectGroup(group)", ng-class="{selected: group.group_id === selectedGroup.group_id}")
+                td {{ group.name }}
+                td {{ group.index }}
+        div.box-footer
+          button.btn.btn-primary.margin(ng-click="addGroup()") Add
+
+  div.row
+    ng-switch(on="anyGroupSelected()")
+      div.col-xs-12(ng-switch-when="true")
+        div.box.box-solid
+          div.box-body
+            div.row
+              div.col-md-6.col-sm-6
+                form(role="form")
+                  div.box-body
+                    div.form-group
+                      label(for="name") Name
+                      input.form-control(type="text", id="name", ng-model="selectedGroup.name")
+                    div.form-group
+                      label(for="key") Index
+                      input.form-control(type="text", id="index", ng-model="selectedGroup.index")
+
+            div.box-footer
+              button.btn.btn-primary.margin(type="submit", ng-click="saveGroup()") Save
+              button.btn.btn-warning.margin(ng-click="deleteGroup()") Delete
+
