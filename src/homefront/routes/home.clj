@@ -48,7 +48,6 @@
   :handle-ok (fn [ctx]
                (let [start-time (get-in ctx [:request :params :start])
                      end-time (get-in ctx [:request :params :end])]
-                 (println "get sensors" start-time end-time)
                  (generate-string (get-sensors-with-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
@@ -57,9 +56,17 @@
   :handle-ok (fn [ctx]
                (let [start-time (get-in ctx [:request :params :start])
                      end-time (get-in ctx [:request :params :end])]
-                 (println "get sensors" start-time end-time)
                  (generate-string (get-groups-with-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
+
+(defresource group-humidity-data
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx]
+               (let [start-time (get-in ctx [:request :params :start])
+                     end-time (get-in ctx [:request :params :end])]
+                 (generate-string (get-groups-with-humidity-data (parse-time start-time) (parse-time end-time)))))
+  :available-media-types ["application/json"])
+
 
 (defresource save-data
   :allowed-methods [:post]
@@ -101,6 +108,7 @@
   (GET "/groups" request groups)
   (GET "/sensorData" request sensor-data)
   (GET "/groupData" request group-data)
+  (GET "/groupHumidityData" request group-humidity-data)
   (POST "/saveData" request save-data)
   (POST "/saveSensor" request save-sensor)
   (DELETE "/deleteSensor/:sensor" [sensor] (delete-sensor sensor))

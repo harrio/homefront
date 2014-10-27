@@ -59,6 +59,20 @@
       :name s/Str
       :temperature [Temperature-out]}]}])
 
+(def Probe-groups-with-data
+  [{:group_id s/Num
+    :name s/Str
+    :probe [{:probe_id s/Num
+      :name s/Str
+      :temperature [Temperature-out]}]}])
+
+(def Probe-groups-with-humidity-data
+  [{:group_id s/Num
+    :name s/Str
+    :probe [{:probe_id s/Num
+      :name s/Str
+      :humidity [Humidity-out]}]}])
+
 (defn validate-sensors-with-data [data]
   (s/validate Sensors-with-data data))
 
@@ -76,3 +90,9 @@
 
 (defn validate-groups [groups]
   (s/validate Probe-groups groups))
+
+(defn validate-groups-with-data [groups]
+  (s/validate Probe-groups-with-data groups))
+
+(defn validate-groups-with-humidity-data [groups]
+  (s/validate Probe-groups-with-humidity-data groups))

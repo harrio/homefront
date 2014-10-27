@@ -33,6 +33,18 @@ var makeGroups = function(data) {
   return _.map(data, makeSensor);
 }
 
+var makeProbeHumidity = function(probeData) {
+  return { label: probeData.name, data: _.map(probeData.humidity, makePoint) };
+}
+
+var makeSensorHumidity = function(sensorData) {
+  return { name: sensorData.name, data: _.map(sensorData.probe, makeProbeHumidity) };
+}
+
+var makeGroupsHumidity = function(data) {
+  return _.map(data, makeSensorHumidity);
+}
+
 var makeFlot = function(dataArrays) {
   var data = [];
   for (var key in dataArrays) {
@@ -194,7 +206,7 @@ exports.chartCtrl = function($scope, $http, $interval) {
     $http({method: 'GET', url: '/groupData', params: { start: format($scope.startTime), end: format($scope.endTime) }}).
         success(function(data, status, headers, config) {
 
-          $scope.groups = makeGroups(data);
+          $scope.groups = makeGroups(data, makeProbe);
 
       }).
       error(function(data, status, headers, config) {
@@ -202,5 +214,22 @@ exports.chartCtrl = function($scope, $http, $interval) {
       });
   };
 
-  $scope.fetchGroups();
+  $scope.fetchGroupsHumidity = function() {
+    $http({method: 'GET', url: '/groupHumidityData', params: { start: format($scope.startTime), end: format($scope.endTime) }}).
+        success(function(data, status, headers, config) {
+
+          $scope.groupsHumidity = makeGroupsHumidity(data);
+
+      }).
+      error(function(data, status, headers, config) {
+        console.log("temps failed: " + status);
+      });
+  };
+
+  $scope.fetchAll = function() {
+    $scope.fetchGroups();
+    $scope.fetchGroupsHumidity();
+  }
+
+  $scope.fetchAll();
 };

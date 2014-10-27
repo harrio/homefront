@@ -24,8 +24,14 @@ section.content
                       button.btn.btn-default(type="button", ng-click="openEnd($event)")
                         i.glyphicon.glyphicon-calendar
         div.box-footer
-          button.btn.btn-primary.margin(type="submit", ng-click="fetchGroups()") Update
+          button.btn.btn-primary.margin(type="submit", ng-click="fetchAll()") Update
 
+  h3 Temperature
   div(ng-repeat="group in groups")
+    {{ group.name }}
+    flot(dataset="group.data", options="flotOptions", width="90%", height="300px")
+
+  h3 Humidity
+  div(ng-repeat="group in groupsHumidity")
     {{ group.name }}
     flot(dataset="group.data", options="flotOptions", width="90%", height="300px")
