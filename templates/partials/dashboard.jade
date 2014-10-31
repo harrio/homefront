@@ -2,8 +2,8 @@ section.content-header
   h1
     | Dashboard
 section.content
-  div.row(ng-repeat="sensor in sensorData")
-    div.col-lg-3.col-xs-6(ng-repeat="probe in sensor.probe")
+  div.row(ng-repeat="group in sensorData")
+    div.col-lg-3.col-xs-6(ng-repeat="probe in group.probe")
       div.small-box.bg-yellow(ng-repeat="temperature in probe.temperature")
         div.inner
           h3 {{temperature.value}}&deg;
@@ -12,7 +12,7 @@ section.content
           i.ion.ion-arrow-up-a
         div.small-box-footer
 
-      div.small-box.bg-yellow(ng-repeat="humidity in probe.humidity")
+      div.small-box.bg-teal(ng-repeat="humidity in probe.humidity")
         div.inner
           h3 {{humidity.value}}%
           p {{probe.name}}

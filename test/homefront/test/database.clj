@@ -1,6 +1,6 @@
 (ns homefront.test.database
   (:require [clojure.test :refer :all]
-            [homefront.database :refer :all]
+            [homefront.db.data :refer :all]
             [korma.db :as db]
             [korma.core :as sql]
             [clj-time.core :as time]))

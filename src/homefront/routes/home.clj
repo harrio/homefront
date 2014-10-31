@@ -7,7 +7,8 @@
             [clj-time.format :refer :all]
             [noir.io :as io]
             [clojure.java.io :refer [file]]
-            [homefront.database :refer :all]))
+            [homefront.db.data :refer :all]
+            [homefront.db.admin :refer :all]))
 
 
 (add-encoder org.joda.time.DateTime
@@ -54,7 +55,7 @@
 (defresource latest-sensor-data
   :allowed-methods [:get]
   :handle-ok (fn [ctx]
-                 (generate-string (get-sensors-with-latest-data)))
+                 (generate-string (get-groups-with-latest-data)))
   :available-media-types ["application/json"])
 
 (defresource group-data

@@ -52,8 +52,8 @@
 (def Humidity-out
   (dissoc Humidity-in :hum_id :probe_id))
 
-(def Sensors-with-latest-data
-  [{:sensor_id s/Num
+(def Groups-with-latest-data
+  [{:group_id s/Num
     :name s/Str
     :probe [{:probe_id s/Num
       :name s/Str
@@ -84,8 +84,8 @@
 (defn validate-sensors-with-data [data]
   (s/validate Sensors-with-data data))
 
-(defn validate-sensors-with-latest-data [data]
-  (s/validate Sensors-with-latest-data data))
+(defn validate-groups-with-latest-data [data]
+  (s/validate Groups-with-latest-data data))
 
 (defn validate-sensor-data-in [data]
   (s/validate Sensor-data-in data))
