@@ -51,6 +51,12 @@
                  (generate-string (get-sensors-with-data (parse-time start-time) (parse-time end-time)))))
   :available-media-types ["application/json"])
 
+(defresource latest-sensor-data
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx]
+                 (generate-string (get-sensors-with-latest-data)))
+  :available-media-types ["application/json"])
+
 (defresource group-data
   :allowed-methods [:get]
   :handle-ok (fn [ctx]
@@ -107,6 +113,7 @@
   (GET "/sensors" request sensors)
   (GET "/groups" request groups)
   (GET "/sensorData" request sensor-data)
+  (GET "/latestSensorData" request latest-sensor-data)
   (GET "/groupData" request group-data)
   (GET "/groupHumidityData" request group-humidity-data)
   (POST "/saveData" request save-data)

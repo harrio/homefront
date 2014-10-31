@@ -2,95 +2,20 @@ section.content-header
   h1
     | Dashboard
 section.content
-  div.row
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-yellow
+  div.row(ng-repeat="sensor in sensorData")
+    div.col-lg-3.col-xs-6(ng-repeat="probe in sensor.probe")
+      div.small-box.bg-yellow(ng-repeat="temperature in probe.temperature")
         div.inner
-          h3 21.3&deg;
-          p Yläkerta
+          h3 {{temperature.value}}&deg;
+          p {{probe.name}}
         div.icon
           i.ion.ion-arrow-up-a
         div.small-box-footer
 
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-yellow
+      div.small-box.bg-yellow(ng-repeat="humidity in probe.humidity")
         div.inner
-          h3 50.5%
-          p Kosteus
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-  div.row
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-teal
-        div.inner
-          h3 20.2&deg;
-          p Alakerta
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-teal
-        div.inner
-          h3 48.3%
-          p Kosteus
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-green
-        div.inner
-          h3 20.1&deg;
-          p Ulkoilma
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-green
-        div.inner
-          h3 70.3%
-          p Kosteus
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-  div.row
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-blue
-        div.inner
-          h3 16.2&deg;
-          p Kellari
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-blue
-        div.inner
-          h3 60.3%
-          p Kosteus
-        div.icon
-          i.ion.ion-arrow-up-a
-        div.small-box-footer
-
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-red
-        div.inner
-          h3 32.2&deg;
-          p Lähtevä vesi
-        div.icon
-          i.ion.ion-arrow-down-a
-        div.small-box-footer
-
-    div.col-lg-3.col-xs-6
-      div.small-box.bg-aqua
-        div.inner
-          h3 20.3&deg;
-          p Palaava vesi
+          h3 {{humidity.value}}%
+          p {{probe.name}}
         div.icon
           i.ion.ion-arrow-up-a
         div.small-box-footer

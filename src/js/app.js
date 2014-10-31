@@ -17,7 +17,6 @@ myApp.controller('dashboardCtrl', require('./controllers/dashboardCtrl.js').dash
 myApp.controller('chartCtrl', require('./controllers/chartCtrl.js').chartCtrl);
 myApp.controller('sensorCtrl', require('./controllers/sensorCtrl.js').sensorCtrl);
 myApp.controller('groupCtrl', require('./controllers/groupCtrl.js').groupCtrl);
-myApp.controller('tempGraphCtrl', require('./controllers/tempGraphCtrl.js').tempGraphCtrl);
 myApp.directive('tempDirective', require('./directives/tempDirective.js').tempDirective);
 
 myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {

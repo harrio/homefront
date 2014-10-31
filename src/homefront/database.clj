@@ -149,6 +149,23 @@
     (validate-sensors-with-data data)
     data))
 
+(defn get-sensors-with-latest-data []
+  (let [data (sql/select sensor
+          (sql/fields :sensor_id :name)
+          (sql/with probe
+                (sql/fields :probe_id :name)
+                (sql/with temperature
+                      (sql/fields :time :value)
+                      (sql/limit 1)
+                      (sql/order :time :DESC))
+                (sql/with humidity
+                      (sql/fields :time :value)
+                      (sql/limit 1)
+                      (sql/order :time :DESC))))]
+    (validate-sensors-with-latest-data data)
+    data))
+
+;(get-sensors-with-latest-data)
 
 (defn get-groups-with-data [start-time end-time]
   (let [data (sql/select probegroup
