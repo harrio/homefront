@@ -68,11 +68,11 @@
                 (sql/fields :probe_id :name)
                 (sql/with temperature
                       (sql/fields :time :value)
-                      (sql/limit 1)
+                      (sql/limit 2)
                       (sql/order :time :DESC))
                 (sql/with humidity
                       (sql/fields :time :value)
-                      (sql/limit 1)
+                      (sql/limit 2)
                       (sql/order :time :DESC))))]
     (validate-groups-with-latest-data data)
     data))

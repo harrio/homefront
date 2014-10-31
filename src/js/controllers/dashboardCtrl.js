@@ -7,6 +7,22 @@ var parseDate = format.parse;
 exports.dashboardCtrl = function($scope, $http, $interval) {
   var stop;
 
+  $scope.trendDown = function(values) {
+    if (values.length < 2) {
+      return false;
+    } else {
+      return values[0].value < values[1].value;
+    }
+  };
+
+  $scope.trendUp = function(values) {
+    if (values.length < 2) {
+      return false;
+    } else {
+      return values[0].value > values[1].value;
+    }
+  };
+
   $scope.scheduleFetch = function() {
     if (angular.isDefined(stop)) {
       return;

@@ -14,7 +14,7 @@
                    :user "homefront"
                    :password "homefront"
                    :host "localhost"
-                   :port 5432 }))
+                   :port 5433 }))
 
 (defn convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
