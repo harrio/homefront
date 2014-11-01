@@ -1,13 +1,24 @@
 var angular = require('angular');
 var _ = require('lodash');
+var moment = require('moment');
 
 var format = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
 var parseDate = format.parse;
+var formatOut = d3.time.format("%d.%m.%Y %H:%M")
 
 exports.dashboardCtrl = function($scope, $http, $interval) {
   var stop;
 
+  $scope.formatDate = function(timeStr) {
+    var date = parseDate(timeStr);
+    return formatOut(date);
+  };
+
   $scope.trendDown = function(values) {
+    if ($scope.probeTimeout(values[0])) {
+      return false;
+    }
+
     if (values.length < 2) {
       return false;
     } else {
@@ -16,6 +27,10 @@ exports.dashboardCtrl = function($scope, $http, $interval) {
   };
 
   $scope.trendUp = function(values) {
+    if ($scope.probeTimeout(values[0])) {
+      return false;
+    }
+
     if (values.length < 2) {
       return false;
     } else {
@@ -32,6 +47,13 @@ exports.dashboardCtrl = function($scope, $http, $interval) {
       $scope.fetchLatestData();
     }, 60000);
   };
+
+  $scope.probeTimeout = function(value) {
+    var m = moment(parseDate(value.time));
+    var now = moment();
+    var diff = now.diff(m, 'minutes');
+    return diff > 10;
+  }
 
   $scope.stopFetch = function() {
     if (angular.isDefined(stop)) {

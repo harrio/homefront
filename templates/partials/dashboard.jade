@@ -6,17 +6,19 @@ section.content
     div.col-lg-3.col-xs-6(ng-repeat="probe in group.probe")
       div.small-box.bg-yellow
         div.inner
-          h3 {{probe.temperature[0].value}}&deg;
-          p {{probe.name}}
+          h3 {{ probe.temperature[0].value }}&deg;
+          p {{ probe.name }}
         div.icon
-          i.ion(ng-class="{'ion-ios7-arrow-down': trendDown(probe.temperature), 'ion-ios7-arrow-up': trendUp(probe.temperature)}")
+          i.ion(ng-class="{'ion-alert-circled': probeTimeout(probe.temperature[0]), 'ion-ios7-arrow-down': trendDown(probe.temperature), 'ion-ios7-arrow-up': trendUp(probe.temperature)}")
         div.small-box-footer
+          {{ formatDate(probe.temperature[0].time) }}
 
       div.small-box.bg-teal(ng-if="probe.humidity.length > 0")
         div.inner
-          h3 {{probe.humidity[0].value}}%
-          p {{probe.name}}
+          h3 {{ probe.humidity[0].value }}%
+          p {{ probe.name }}
         div.icon
-          i.ion(ng-class="{'ion-ios7-arrow-down': trendDown(probe.humidity), 'ion-ios7-arrow-up': trendUp(probe.humidity)}")
+          i.ion(ng-class="{'ion-alert-circled': probeTimeout(probe.humidity[0]), 'ion-ios7-arrow-down': trendDown(probe.humidity), 'ion-ios7-arrow-up': trendUp(probe.humidity)}")
         div.small-box-footer
+          {{ formatDate(probe.humidity[0].time) }}
 
