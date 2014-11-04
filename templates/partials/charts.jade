@@ -20,7 +20,10 @@ section.content
               button.btn.btn-default(type="button", ng-click="openEnd($event)")
                 i.glyphicon.glyphicon-calendar
         div.box-footer
-          button.btn.btn-primary.margin(type="submit", ng-click="fetchAll()") Update
+          button.btn.btn-primary.margin.inline(type="submit", ng-click="fetchAll()") Update
+          div.icon.inline
+            i.ion(ng-class="{'ion-loading-c': loading()}")
+
 
   h3 Temperature
   div(ng-repeat="group in groups")

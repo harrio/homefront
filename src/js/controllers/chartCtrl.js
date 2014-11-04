@@ -122,6 +122,8 @@ exports.chartCtrl = function($scope, $http, $interval) {
             }
           };
 
+  $scope.loadingTemps = false;
+  $scope.loadingHums = false;
   $scope.startTime = makeStartTime();
   $scope.endTime = makeEndTime();
   $scope.format = 'dd.MM.yyyy';
@@ -130,51 +132,9 @@ exports.chartCtrl = function($scope, $http, $interval) {
     startingDay: 1
   };
 
-  $scope.fetchData = function() {
-    if (angular.isDefined(stop)) {
-      return;
-    }
-
-    stop = $interval(function() {
-      $http({method: 'GET', url: '/sensors'}).
-        success(function(data, status, headers, config) {
-          $scope.sensors = data;
-      }).
-      error(function(data, status, headers, config) {
-        console.log("temps failed: " + status);
-      });
-    }, 60000);
-  };
-
-  $scope.stopFetch = function() {
-    if (angular.isDefined(stop)) {
-      $interval.cancel(stop);
-      stop = undefined;
-    }
-  };
-
-  $scope.$on('$destroy', function() {
-    // Make sure that the interval is destroyed too
-    $scope.stopFetch();
-  });
-
-  $scope.getX = function(){
-    return function(d) {
-      return parseDate(d.time);
-    };
-  };
-
-  $scope.getY = function(){
-    return function(d) {
-      return d.temp;
-    };
-  };
-
-  $scope.xAxisTickFormat = function() {
-    return function(d) {
-      return d3.time.format('%H:%M:%S')(new Date(d));
-    };
-  };
+  $scope.loading = function() {
+    return $scope.loadingTemps || $scope.loadingHums;
+  }
 
   $scope.openStart = function($event) {
     $event.preventDefault();
@@ -207,10 +167,12 @@ exports.chartCtrl = function($scope, $http, $interval) {
         success(function(data, status, headers, config) {
 
           $scope.groups = makeGroups(data, makeProbe);
+          $scope.loadingTemps = false;
 
       }).
       error(function(data, status, headers, config) {
         console.log("temps failed: " + status);
+        $scope.loadingTemps = false;
       });
   };
 
@@ -219,14 +181,17 @@ exports.chartCtrl = function($scope, $http, $interval) {
         success(function(data, status, headers, config) {
 
           $scope.groupsHumidity = makeGroupsHumidity(data);
-
+          $scope.loadingHums = false;
       }).
       error(function(data, status, headers, config) {
-        console.log("temps failed: " + status);
+        console.log("hums failed: " + status);
+        $scope.loadingHums = false;
       });
   };
 
   $scope.fetchAll = function() {
+    $scope.loadingTemps = true;
+    $scope.loadingHums = true;
     $scope.fetchGroups();
     $scope.fetchGroupsHumidity();
   }
