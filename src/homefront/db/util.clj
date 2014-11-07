@@ -8,13 +8,16 @@
             [clj-time.coerce :as time-coerce]
             [clj-time.core :as time]
             [homefront.models.schema :refer :all]
-            [homefront.util :as util]))
+            [homefront.util :as util]
+            [environ.core :refer [env]]))
+
+(def db-port (Integer/parseInt (or (env :homefront-db-port) "5432")))
 
 (db/defdb pg (korma.db/postgres {:db "homefront"
                    :user "homefront"
                    :password "homefront"
                    :host "localhost"
-                   :port 5433 }))
+                   :port db-port}))
 
 (defn convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))

@@ -6,6 +6,7 @@
     pidfile: /var/run/homefront.pid
     daemon_opts: "-jar /root/deploy/homefront.jar 3001"
     service_name: homefront
+# homefront_user, homefront_pwd, homefront_db_port vars are expected to come from somewhere, e.g. the inventory.
 
   tasks:
   - name: Stop the service if it already exists

@@ -12,7 +12,7 @@ fi
 
 start_service() {
   echo -n " * Starting $SERVICE_NAME... "
-  start-stop-daemon --make-pidfile -Sq -p $PIDFILE -b -x /usr/bin/env HOMEFRONT_USER={{homefront_user}} HOMEFRONT_PWD={{homefront_pwd}} $DAEMON -- $DAEMON_OPTS
+  start-stop-daemon --make-pidfile -Sq -p $PIDFILE -b -x /usr/bin/env HOMEFRONT_USER={{homefront_user}} HOMEFRONT_PWD={{homefront_pwd}} HOMEFRONT_DB_PORT={{homefront_db_port}} $DAEMON -- $DAEMON_OPTS
   e=$?
   if [ $e -eq 1 ]; then
     echo "already running"
