@@ -26,6 +26,7 @@
          :destroy homefront.handler/destroy}
   :aot :all
   :main homefront.main
+  :uberjar-name "homefront.jar"
   :profiles
   {:production
    {:ring

@@ -1,0 +1,20 @@
+---
+- hosts: appservers
+  vars:
+    user: root
+    daemon: /usr/bin/java
+    pidfile: /var/run/homefront.pid
+    daemon_opts: "-jar /root/deploy/homefront.jar 3001"
+    service_name: homefront
+
+  tasks:
+  - name: Stop the service if it already exists
+    action: service name=homefront state=stopped
+  - name: Create deploy directory
+    file: path=/root/deploy state=directory
+  - name: Copy homefront.jar
+    action: copy src=../target/homefront.jar dest=/root/deploy/homefront.jar mode=0751
+  - name: Add homefront init.d daemon script
+    action: template src=templates/init.d-template.j2 dest=/etc/init.d/homefront mode=0751
+  - name: Ensure my daemon homefront is started
+    action: service name=homefront state=started
