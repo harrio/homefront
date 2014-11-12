@@ -4,7 +4,7 @@
     user: root
     daemon: /usr/bin/java
     pidfile: /var/run/homefront.pid
-    daemon_opts: "-jar /root/deploy/homefront.jar 3001"
+    daemon_opts: "-jar /root/deploy/homefront.jar 3000"
     service_name: homefront
 # homefront_user, homefront_pwd, homefront_db_port vars are expected to come from somewhere, e.g. the inventory.
 
@@ -19,3 +19,4 @@
     action: template src=templates/init.d-template.j2 dest=/etc/init.d/homefront mode=0751
   - name: Ensure my daemon homefront is started
     action: service name=homefront state=started
+  - wait_for: port=3000 timeout=30
