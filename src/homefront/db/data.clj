@@ -77,7 +77,15 @@
     (validate-groups-with-latest-data data)
     data))
 
-;(get-sensors-with-latest-data)
+(defn get-probes-with-latest-data []
+  (let [data (sql/select probe
+                         (sql/fields :probe_id :name)
+                         (sql/with temperature
+                                   (sql/fields :time :value)
+                                   (sql/limit 1)
+                                   (sql/order :time :DESC))
+                         )]
+    data))
 
 (defn get-groups-with-data [start-time end-time]
   (let [data (sql/select probegroup
@@ -172,3 +180,9 @@
       (insert-probe-data probe data)
       )))
 
+(defn- no-recent-data? [probe-data]
+  (let [temp (first (:temperature probe-data))]
+    (time/before? (:time temp) (time/minus (time/now) (time/minutes 10)))))
+
+(defn get-dead-sensors []
+  (filter no-recent-data? (get-probes-with-latest-data)))
