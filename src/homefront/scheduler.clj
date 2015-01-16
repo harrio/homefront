@@ -15,7 +15,7 @@
       (send-probes-dead (collect-names dead)))))
 
 (defn schedule-probe-watch []
-  (at/every 600000 check-dead-sensors at-pool))
+  (at/every (* 60 60 1000) check-dead-sensors at-pool))
 
 
 
