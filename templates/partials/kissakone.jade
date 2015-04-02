@@ -1,0 +1,45 @@
+section.content-header
+  h1
+    | Administration
+    small Kissakone
+section.content
+  div.row
+    div.col-xs-12
+      div.box
+        div.box-header
+          h3.box-title Feed times
+        div.box-body.table-responsive
+          table.table.table-bordered.table-hover(id="feedingtable")
+            thead
+              tr
+                th Id
+                th Time
+                th Status
+            tbody
+              tr(ng-repeat="feeding in feedings")
+                td {{ feeding.feed_id }}
+                td {{ formatDate(feeding.time) }}
+                td {{ feeding.status }}
+
+  div.row
+    div.col-xs-12
+      div.box.box-solid
+        div.box-body
+          div.row
+            div.col-md-6.col-sm-6
+              form(role="form")
+                div.box-body
+                  div.form-group
+                    label(for='date') Date
+                    input.form-control(type="text", id="date", datepicker-options="dateOptions", ng-model="form.date", datepicker-popup="{{format}}", is-open="dateOpened")
+                    span.input-group-btn
+                                  button.btn.btn-default(type="button", ng-click="openDate($event)")
+                                    i.glyphicon.glyphicon-calendar
+                  div.form-group
+                    label(for='time') Time
+                    input.form-control(type="text", id="time", ng-model="form.time")
+
+          div.box-footer
+            button.btn.btn-primary.margin(type="submit", ng-click="saveFeeding()") Save
+
+

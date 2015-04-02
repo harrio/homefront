@@ -37,10 +37,14 @@
   (route/not-found "Not Found"))
 
 (def app
-  (-> (routes home-routes app-routes)
-      (handler/site)
-      (wrap-base-url)
-      (wrap-basic-authentication authenticated?)
-      (wrap-json-body {:keywords? true})))
+  (routes
+    (-> open-routes
+        (handler/api)
+        (wrap-base-url))
+    (-> (routes home-routes app-routes)
+        (handler/site)
+        (wrap-base-url)
+        (wrap-basic-authentication authenticated?)
+        (wrap-json-body {:keywords? true}))))
 
 

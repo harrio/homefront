@@ -33,4 +33,5 @@
    {:ring
     {:open-browser? false, :stacktraces? false, :auto-reload? false}}
    :dev
-   {:dependencies [[ring-mock "0.1.5"] [ring/ring-devel "1.2.0"]]}})
+   {:env {:homefront-user "foo" :homefront-pwd "bar"}
+    :dependencies [[ring-mock "0.1.5"] [ring/ring-devel "1.2.0"]]}})

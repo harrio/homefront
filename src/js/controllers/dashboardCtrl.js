@@ -55,6 +55,16 @@ exports.dashboardCtrl = function($scope, $http, $interval) {
     return diff > 10;
   }
 
+  $scope.catTimeout = function() {
+    if ($scope.catHeartbeat == null) {
+      return true;
+    }
+    var m = moment(parseDate($scope.catHeartbeat.time));
+    var now = moment();
+    var diff = now.diff(m, 'minutes');
+    return diff > 2;
+  }
+
   $scope.stopFetch = function() {
     if (angular.isDefined(stop)) {
       $interval.cancel(stop);
@@ -75,6 +85,14 @@ exports.dashboardCtrl = function($scope, $http, $interval) {
       error(function(data, status, headers, config) {
         console.log("temps failed: " + status);
       });
+
+    $http({method: 'GET', url: '/catHeartbeat'}).
+        success(function(data, status, headers, config) {
+          $scope.catHeartbeat = data;
+      }).
+      error(function(data, status, headers, config) {
+        console.log("heartbeat failed: " + status);
+    });
   };
 
   $scope.fetchLatestData();

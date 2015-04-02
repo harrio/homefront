@@ -22,3 +22,14 @@ section.content
         div.small-box-footer
           {{ formatDate(probe.humidity[0].time) }}
 
+  div.row(ng-if="catHeartbeat")
+    div.col-lg-3.col-xs-6
+      div.small-box(ng-class="catTimeout() ? 'bg-gray' : 'bg-green'")
+        div.inner
+          h3 {{ catTimeout() ? 'Off' : 'On' }}
+          p Kissakone
+        div.icon
+          i.ion.ion-social-octocat
+        div.small-box-footer
+          {{ formatDate(catHeartbeat.time) }}
+

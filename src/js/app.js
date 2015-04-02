@@ -17,7 +17,10 @@ myApp.controller('dashboardCtrl', require('./controllers/dashboardCtrl.js').dash
 myApp.controller('chartCtrl', require('./controllers/chartCtrl.js').chartCtrl);
 myApp.controller('sensorCtrl', require('./controllers/sensorCtrl.js').sensorCtrl);
 myApp.controller('groupCtrl', require('./controllers/groupCtrl.js').groupCtrl);
+myApp.controller('kissakoneCtrl', require('./controllers/kissakoneCtrl.js').kissakoneCtrl);
 myApp.directive('tempDirective', require('./directives/tempDirective.js').tempDirective);
+myApp.directive('datetimepicker', require('./directives/datetimeDirective.js').datetimepicker);
+myApp.directive('timepicker', require('./directives/datetimeDirective.js').timepicker);
 
 myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     $routeProvider.
@@ -36,6 +39,10 @@ myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $l
       when('/groupadmin', {
         templateUrl: 'partials/groups.html',
         controller: 'groupCtrl'
+      }).
+      when('/kissakoneadmin', {
+        templateUrl: 'partials/kissakone.html',
+        controller: 'kissakoneCtrl'
       }).
       otherwise({
         redirectTo: '/'

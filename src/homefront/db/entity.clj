@@ -21,7 +21,7 @@
      (sql/transform sql-timestamp->joda-datetime)
      ~@body))
 
-(declare sensor probe probe-in-group probegroup temperature humidity)
+(declare sensor probe probe-in-group probegroup temperature humidity heartbeat)
 
 (defentity sensor
   (sql/pk :sensor_id)
@@ -45,3 +45,8 @@
 (defentity humidity
   (sql/pk :hum_id)
   (sql/belongs-to probe))
+
+(defentity heartbeat)
+
+(defentity feeding
+           (sql/pk :feed_id))

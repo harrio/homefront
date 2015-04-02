@@ -34,3 +34,15 @@ CREATE TABLE probegroup (
   name varchar(100) NOT NULL,
   index integer NOT NULL
 );
+
+CREATE TABLE heartbeat (
+  hb_id serial PRIMARY KEY,
+  key VARCHAR(5) NOT NULL,
+  time timestamp WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE feeding (
+  feed_id serial PRIMARY KEY,
+  time timestamp WITH TIME ZONE NOT NULL,
+  status varchar(1)
+);

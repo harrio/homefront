@@ -107,16 +107,17 @@
   (filter #(some has-humidity (:probe %1)) groups))
 
 (defn get-groups-with-humidity-data [start-time end-time]
-  (let [data (filter-group-with-humidity-probes (sql/select probegroup
-                         (sql/fields :group_id :name)
-                         (sql/with probe
-                           (sql/fields :probe_id :name)
-                           (sql/where {:humidity true})
-                           (sql/with humidity
-                             (sql/fields :time :value)
-                             (sql/where {:time [between [(joda-datetime->sql-timestamp start-time) (joda-datetime->sql-timestamp end-time)]]})
-                             (sql/order :time :ASC)))
-                         (sql/order :index :ASC)))]
+  (let [data (filter-group-with-humidity-probes
+               (sql/select probegroup
+                           (sql/fields :group_id :name)
+                           (sql/with probe
+                                     (sql/fields :probe_id :name)
+                                     (sql/where {:humidity true})
+                                     (sql/with humidity
+                                               (sql/fields :time :value)
+                                               (sql/where {:time [between [(joda-datetime->sql-timestamp start-time) (joda-datetime->sql-timestamp end-time)]]})
+                                               (sql/order :time :ASC)))
+                           (sql/order :index :ASC)))]
 
     (validate-groups-with-humidity-data data)
     data))
