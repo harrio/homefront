@@ -1,7 +1,8 @@
 CREATE TABLE sensor (
   sensor_id serial PRIMARY KEY,
   mac varchar(20) NOT NULL,
-  name varchar(100) NOT NULL
+  name varchar(100) NOT NULL,
+  floor integer
 );
 
 CREATE TABLE probe (

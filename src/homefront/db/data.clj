@@ -187,3 +187,45 @@
 
 (defn get-dead-sensors []
   (filter no-recent-data? (get-probes-with-latest-data)))
+
+(defn floor->temp [data]
+  {:floor (:floor data) :temp (format "%02d"
+                             (Math/round
+                               (.doubleValue
+                                 (:value
+                                   (first (:temperature
+                                            (first (:probe data))))))))})
+
+(defn floor->hum [data]
+  {:floor (:floor data) :hum (format "%02d"
+                             (Math/round
+                               (.doubleValue
+                                 (:value
+                                   (first (:humidity
+                                            (first (:probe data))))))))})
+
+(defn get-floor-temps []
+  (let [data (sql/select sensor
+                         (sql/fields :sensor_id :floor)
+                         (sql/where {:floor [not= nil]})
+                         (sql/with probe
+                                   (sql/fields :probe_id)
+                                   (sql/where {:humidity true})
+                                   (sql/with temperature
+                                             (sql/fields :value)
+                                             (sql/limit 1)
+                                             (sql/order :time :DESC))))]
+    (map floor->temp data)))
+
+(defn get-floor-hums []
+  (let [data (sql/select sensor
+                         (sql/fields :sensor_id :floor)
+                         (sql/where {:floor [not= nil]})
+                         (sql/with probe
+                                   (sql/fields :probe_id)
+                                   (sql/where {:humidity true})
+                                   (sql/with humidity
+                                             (sql/fields :value)
+                                             (sql/limit 1)
+                                             (sql/order :time :DESC))))]
+    (map floor->hum data)))

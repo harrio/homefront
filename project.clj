@@ -19,7 +19,8 @@
                  [org.clojure/tools.reader "0.8.8"]
                  [environ "1.0.0"]
                  [silasdavis/at-at "1.2.0"]
-                 [com.draines/postal "1.11.3"]]
+                 [com.draines/postal "1.11.3"]
+                 [clojurewerkz/machine_head "1.0.0-beta8"]]
   :dev-dependencies [[lein-eclipse "1.0.0"]]
   :plugins [[lein-ring "0.8.7"] [no-man-is-an-island/lein-eclipse "2.0.0"]]
   :ring {:handler homefront.handler/app
