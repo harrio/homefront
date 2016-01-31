@@ -183,7 +183,8 @@
 
 (defn- no-recent-data? [probe-data]
   (let [temp (first (:temperature probe-data))]
-    (time/before? (:time temp) (time/minus (time/now) (time/minutes 10)))))
+    (if temp
+      (time/before? (:time temp) (time/minus (time/now) (time/minutes 60))))))
 
 (defn get-dead-sensors []
   (filter no-recent-data? (get-probes-with-latest-data)))

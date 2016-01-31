@@ -19,12 +19,12 @@
 
 (def Sensor
   {(s/optional-key :sensor_id) s/Num
-   :mac s/Str
-   :name s/Str
-   (s/optional-key :key) s/Str
-   (s/optional-key :active) s/Bool
-   (s/optional-key :floor) s/Num
-   :probe [Probe]})
+   :mac                        s/Str
+   :name                       s/Str
+   (s/optional-key :key)       s/Str
+   (s/optional-key :active)    s/Bool
+   (s/optional-key :floor)     (s/maybe s/Num)
+   :probe                      [Probe]})
 
 (def Sensors [Sensor])
 
