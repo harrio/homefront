@@ -1,5 +1,9 @@
 (ns homefront.mqtt
-  (:require [clojurewerkz.machine-head.client :as mh]
+  (:require [taoensso.timbre :as timbre
+             :refer (log trace  debug  info  warn  error  fatal  report
+                          logf tracef debugf infof warnf errorf fatalf reportf
+                          spy get-env log-env)]
+            [clojurewerkz.machine-head.client :as mh]
             [environ.core :refer [env]]
             [clj-time.format :refer [formatter-local unparse]]
             [clj-time.core :as time]
@@ -15,8 +19,8 @@
 
 (defn send-time []
   (let [zoned (time/to-time-zone (time/now) (time/time-zone-for-id hel-tz))]
-    (mh/publish @mqtt-client "time" (unparse mqtt-formatter zoned))
-        ))
+    (info "MQTT send time")
+    (mh/publish @mqtt-client "time" (unparse mqtt-formatter zoned))))
 
 (defn init-mqtt []
   (let [id   (mh/generate-id)
@@ -24,11 +28,17 @@
     (reset! mqtt-client conn)
     (mh/subscribe @mqtt-client ["timereq" "temphum"]
                   (fn [^String topic _ ^bytes payload]
+                    (info "MQTT received: " topic)
                     (case topic
                       "timereq" (send-time)
-                      "temphum" (let [json-payload (parse-string (String. payload "UTF-8") true)]
-                                  (insert-sensor-data json-payload)))
-                    ))
+                      "temphum" (let [str (String. payload "UTF-8")
+                                      json-payload (parse-string str true)]
+                                  (info "Payload" str)
+                                  (try
+                                    (insert-sensor-data json-payload)
+                                    (catch Exception e (error "Insert sensor data failed" e)))))
+                    )
+                  {:on-connection-lost (fn [reason] (warn "MQTT connection lost" reason))})
     )
   )
 

@@ -189,7 +189,6 @@
   (GET "/sensors" request sensors)
   (GET "/groups" request groups)
   (GET "/sensorData" request sensor-data)
-  (GET "/latestSensorData" request latest-sensor-data)
   (GET "/groupData" request group-data)
   (GET "/groupHumidityData" request group-humidity-data)
   (POST "/saveData" request save-data)
@@ -204,6 +203,7 @@
   (GET "/catHeartbeat" request cat-heartbeat))
 
 (defroutes open-routes
+           (GET "/latestSensorData" request latest-sensor-data)
            (GET "/feedCat" request feed-cat)
            (GET "/catFed/:id" [id] (cat-fed id))
            (GET "/fedCat" request fed-cat))
